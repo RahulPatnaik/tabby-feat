@@ -8,7 +8,6 @@ import { cn } from '@/lib/utils'
 import { NavigationMobile } from './header-mobile'
 import { motion, LayoutGroup } from 'framer-motion'
 import { HeaderConfig } from '@/lib/config/header'
-import { GithubStarButton } from '@/components/revamp/github-star-button'
 
 interface HeaderProps {
   config: HeaderConfig
