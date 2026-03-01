@@ -82,12 +82,7 @@ Tabby is a **system-wide AI assistant** that lives at the point of input. Instea
 | AI                 | Vercel AI SDK, OpenAI/Groq/Cerebras        |
 | Memory             | Mem0 (Supabase vector store + Neo4j graph) |
 | Desktop Automation | nut-js, node-window-manager, Windows MCP   |
-| Database           | Supabase (PostgreSQL)                      |
-
-### Live Services
-
-- **Next.js Backend:** [tabby-api-psi.vercel.app](https://tabby-api-psi.vercel.app)
-- **Python Memory Backend:** [tabby-backend.azurecontainerapps.io](https://tabby-backend.jollydesert-22a4756c.centralindia.azurecontainerapps.io)
+| Database           | Supabase (Local Docker)                    |
 
 ## Setup & Installation
 
@@ -97,8 +92,7 @@ Tabby is a **system-wide AI assistant** that lives at the point of input. Instea
 - Python 3.12+ (for memory backend)
 - [uv](https://github.com/astral-sh/uv) (Python package manager)
 - [pnpm](https://pnpm.io) (for package management)
-- [Supabase](https://supabase.com) account (for vector store)
-- [Neo4j](https://neo4j.com) instance (for knowledge graph)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (for local Supabase)
 - [OpenAI](https://openai.com) API key
 - Google Generative AI API key (Optional)
 - XAI API key (Optional)
@@ -106,6 +100,7 @@ Tabby is a **system-wide AI assistant** that lives at the point of input. Instea
 - Cerebras API key (Optional)
 - OpenRouter API key (Optional)
 - [Tavily](https://tavily.ai/) API key (Web Search)
+- [Neo4j](https://neo4j.com) instance (Optional, for knowledge graph)
 
 ### 1. Clone & Install Dependencies
 
@@ -126,17 +121,48 @@ cd ../backend
 uv sync
 ```
 
-### 2. Database Setup
+### 2. Database Setup (Local Supabase via Docker)
 
-#### Supabase (PostgreSQL + Vector)
+We use a **local Supabase instance** running in Docker instead of the cloud service.
 
-1.  Create a new project at [supabase.com](https://supabase.com).
-2.  Go to the **SQL Editor** in your Supabase dashboard.
-3.  Copy the content of [`frontend/src/lib/supabase/migrations/schema.sql`](frontend/src/lib/supabase/migrations/schema.sql) and run it. This will create the necessary tables (`conversations`, `messages`) and functions.
-4.  Get your **Project URL** and **anon public key** from Project Settings > API.
-5.  Get your **Connection String** (URI) from Project Settings > Database > Connection string > URI.
+1.  **Start Docker Desktop** and wait for it to fully initialize.
+2.  **Initialize Supabase** in the project root:
+    ```bash
+    npx supabase init    # Only needed the first time
+    ```
+3.  **Start local Supabase:**
+    ```bash
+    npx supabase start
+    ```
+    The first run will pull ~13 Docker images (takes a few minutes). Subsequent starts take ~10 seconds.
+4.  When completed, it prints all credentials. Note the **API URL**, **anon key**, and **service_role key**.
+5.  The database schema is auto-applied from `supabase/migrations/`.
+6.  **Create storage buckets** (one-time setup):
+    ```powershell
+    # PowerShell — create the two required storage buckets
+    $headers = @{
+      "apikey" = "<SERVICE_ROLE_KEY from step 4>"
+      "Authorization" = "Bearer <SERVICE_ROLE_KEY from step 4>"
+      "Content-Type" = "application/json"
+    }
+    Invoke-RestMethod -Uri "http://127.0.0.1:54321/storage/v1/bucket" -Method Post -Headers $headers -Body '{"id":"context-captures","name":"context-captures","public":true}'
+    Invoke-RestMethod -Uri "http://127.0.0.1:54321/storage/v1/bucket" -Method Post -Headers $headers -Body '{"id":"project-assets","name":"project-assets","public":true}'
+    ```
+    Or create them manually via **Supabase Studio** at `http://localhost:54323` → Storage.
 
-#### Neo4j (Knowledge Graph)
+#### Supabase Quick Reference
+
+| Action | Command |
+| --- | --- |
+| Start | `npx supabase start` |
+| Stop | `npx supabase stop` |
+| Status | `npx supabase status` |
+| Admin UI | `http://localhost:54323` |
+| Reset DB | `npx supabase db reset` |
+
+> **Note:** Docker Desktop must be running before `npx supabase start`.
+
+#### Neo4j (Knowledge Graph — Optional)
 
 1.  Create a free instance at [Neo4j AuraDB](https://neo4j.com/cloud/platform/aura-graph-database/).
 2.  Save the **Text File** containing your credentials (URI, username, password) when creating the instance.
@@ -144,14 +170,14 @@ uv sync
 
 ### 3. Environment Variables
 
-Create the environment files from the examples:
+Create the environment files from the examples, then fill in the Supabase credentials from `npx supabase status`:
 
 ```bash
 # Frontend
 cp frontend/env.example frontend/.env.local
 
 # Next.js Backend
-cp nextjs-backend/env.example nextjs-backend/.env
+cp nextjs-backend/env.example nextjs-backend/.env.local
 
 # Backend
 cp backend/env.example backend/.env
@@ -160,8 +186,10 @@ cp backend/env.example backend/.env
 **Frontend** (`frontend/.env.local`):
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=""
-NEXT_PUBLIC_SUPABASE_ANON_KEY=""
+# Supabase (local Docker) — get values from `npx supabase status`
+NEXT_PUBLIC_SUPABASE_URL="http://127.0.0.1:54321"
+NEXT_PUBLIC_SUPABASE_ANON_KEY="<ANON_KEY from supabase status>"
+SUPABASE_ADMIN="<SERVICE_ROLE_KEY from supabase status>"
 
 NEXT_PUBLIC_APP_NAME="Tabby"
 NEXT_PUBLIC_APP_ICON="/logos/tabby-logo.png"
@@ -170,12 +198,13 @@ NEXT_PUBLIC_API_URL="http://localhost:3001"
 NEXT_PUBLIC_MEMORY_API_URL="http://localhost:8000"
 ```
 
-**Next.js Backend** (`nextjs-backend/.env`):
+**Next.js Backend** (`nextjs-backend/.env.local`):
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=""
-NEXT_PUBLIC_SUPABASE_ANON_KEY=""
-SUPABASE_ADMIN=""
+# Supabase (local Docker) — same keys as frontend
+NEXT_PUBLIC_SUPABASE_URL="http://127.0.0.1:54321"
+NEXT_PUBLIC_SUPABASE_ANON_KEY="<ANON_KEY from supabase status>"
+SUPABASE_ADMIN="<SERVICE_ROLE_KEY from supabase status>"
 
 RESEND_API_KEY=""
 RESEND_DOMAIN=""
@@ -199,42 +228,45 @@ MEMORY_API_URL="http://localhost:8000"
 
 ```env
 OPENAI_API_KEY=
-SUPABASE_CONNECTION_STRING=
+# Local Supabase PostgreSQL — get DB_URL from `npx supabase status`
+SUPABASE_CONNECTION_STRING="postgresql://postgres:postgres@127.0.0.1:54322/postgres"
 
+# Neo4j (optional)
 NEO4J_URL=
 NEO4J_USERNAME=
 NEO4J_PASSWORD=
-NEO4J_DATABASE=
-AURA_INSTANCEID=
-AURA_INSTANCENAME=
 ```
 
 ### 4. Run the Application
 
 ```bash
+# Terminal 0: Start local Supabase (Docker Desktop must be running)
+npx supabase start
+
 # Terminal 1: Start memory backend
 cd backend
 uv run main.py
 
 # Terminal 2: Start Next.js backend
 cd nextjs-backend
-npm run dev
+pnpm dev
 
-# Terminal 3: Start Windows MCP server
+# Terminal 3: Start Windows MCP server (optional)
 cd frontend
-npm run windows-mcp
+pnpm run windows-mcp
 
 # Terminal 4: Start Electron app
 cd frontend
-npm run dev
+pnpm dev
 ```
 
 The app will start with:
 
+- Supabase at `http://127.0.0.1:54321` (Studio at `:54323`)
 - Frontend app at `http://localhost:3000`
 - Next.js Backend at `http://localhost:3001`
 - Memory API at `http://localhost:8000`
-- Windows MCP at `http://localhost:8001`
+- Windows MCP at `http://localhost:8001` (optional)
 
 ### 5. System Tray
 
