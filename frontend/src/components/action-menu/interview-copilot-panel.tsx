@@ -34,7 +34,11 @@ import {
   getInterviewConversations,
   getConversationMessages,
   deleteConversation,
-} from '@/lib/conversations-api'
+  saveChat,
+  saveMessages,
+  getChatById,
+  generateLocalTitle,
+} from '@/lib/local-db'
 import {
   AnalyzingLoading,
   IdeaLoading,
@@ -67,6 +71,7 @@ export function InterviewCopilotPanel({ onBack, onClose, onReplace }: InterviewC
   const [activeTab, setActiveTab] = useState<TabId>('chat')
   const [isCapturing, setIsCapturing] = useState(false)
   const [activeConversationId, setActiveConversationId] = useState<string>(() => generateUUID())
+  const activeConversationIdRef = useRef(activeConversationId)
   const [conversations, setConversations] = useState<ConversationType[]>([])
 
   const { messages, status, sendMessage, setMessages } = useChat({
@@ -75,7 +80,21 @@ export function InterviewCopilotPanel({ onBack, onClose, onReplace }: InterviewC
     onError: (error) => {
       console.error('Interview Copilot error:', error)
     },
-    onFinish: () => {
+    onFinish: async ({ messages: allMessages }) => {
+      const currentId = activeConversationIdRef.current
+      try {
+        const existing = await getChatById(currentId)
+        if (!existing && allMessages.length > 0) {
+          const firstUserMsg = allMessages.find((m) => m.role === 'user')
+          const title = firstUserMsg ? generateLocalTitle(firstUserMsg) : 'Interview Session'
+          await saveChat({ id: currentId, title, type: 'interview' })
+        }
+        if (allMessages.length > 0) {
+          await saveMessages(allMessages, currentId)
+        }
+      } catch (error) {
+        console.error('Error persisting interview locally:', error)
+      }
       loadConversations()
     },
   })
@@ -96,6 +115,7 @@ export function InterviewCopilotPanel({ onBack, onClose, onReplace }: InterviewC
   const handleSwitchConversation = useCallback(
     async (conversationId: string) => {
       setActiveConversationId(conversationId)
+      activeConversationIdRef.current = conversationId
       try {
         const msgs = await getConversationMessages(conversationId)
         setMessages(msgs)
@@ -109,6 +129,7 @@ export function InterviewCopilotPanel({ onBack, onClose, onReplace }: InterviewC
   const handleNewConversation = useCallback(() => {
     const newId = generateUUID()
     setActiveConversationId(newId)
+    activeConversationIdRef.current = newId
     setMessages([])
   }, [setMessages])
 
