@@ -2,7 +2,9 @@
   "name": "tabby-root",
   "private": true,
   "scripts": {
-    "prepare": "husky"
+    "prepare": "husky",
+    "build": "pnpm --dir frontend run build && pnpm --dir nextjs-backend run build",
+    "typecheck": "pnpm --dir frontend run typecheck && pnpm --dir nextjs-backend run typecheck"
   },
   "devDependencies": {
     "husky": "^9.1.7",
