@@ -1,101 +1,92 @@
-"use client";
+'use client'
 
-import * as React from "react";
-import { cn } from "@/lib/utils";
-import { GeneralTab } from "./general-tab";
-import { ActionsTab } from "./actions-tab";
-import { AboutTab } from "./about-tab";
-import { MemoryTab } from "./memory-tab";
-import { GraphTab } from "./graph-tab";
-import { AccountTab } from "./account-tab";
-import { ShortcutsTab } from "./shortcuts-tab";
-import {
-  Settings,
-  Keyboard,
-  Zap,
-  Database,
-  GitBranch,
-  User,
-  Info,
-  LogOut,
-} from "lucide-react";
+import * as React from 'react'
+import { cn } from '@/lib/utils'
+import { GeneralTab } from './general-tab'
+import { ActionsTab } from './actions-tab'
+import { AboutTab } from './about-tab'
+import { MemoryTab } from './memory-tab'
+import { GraphTab } from './graph-tab'
+import { AccountTab } from './account-tab'
+import { ShortcutsTab } from './shortcuts-tab'
+import { Settings, Keyboard, Zap, Database, GitBranch, User, Info, LogOut } from 'lucide-react'
 
-const appName = process.env.NEXT_PUBLIC_APP_NAME || "Tabby";
+const appName = process.env.NEXT_PUBLIC_APP_NAME || 'Tabby'
 
 interface NavItem {
-  id: string;
-  label: string;
-  description: string;
-  icon: React.ReactNode;
+  id: string
+  label: string
+  description: string
+  icon: React.ReactNode
 }
 
 const navItems: NavItem[] = [
   {
-    id: "general",
-    label: "General",
-    description: "App preferences",
+    id: 'general',
+    label: 'General',
+    description: 'App preferences',
     icon: <Settings className="w-4 h-4" />,
   },
   {
-    id: "shortcuts",
-    label: "Shortcuts",
-    description: "Keyboard shortcuts",
+    id: 'shortcuts',
+    label: 'Shortcuts',
+    description: 'Keyboard shortcuts',
     icon: <Keyboard className="w-4 h-4" />,
   },
   {
-    id: "actions",
-    label: "Actions",
-    description: "AI actions",
+    id: 'actions',
+    label: 'Actions',
+    description: 'AI actions',
     icon: <Zap className="w-4 h-4" />,
   },
   {
-    id: "memory",
-    label: "Memory",
-    description: "Memory storage",
+    id: 'memory',
+    label: 'Memory',
+    description: 'Memory storage',
     icon: <Database className="w-4 h-4" />,
   },
   {
-    id: "graph",
-    label: "Graph",
-    description: "Knowledge graph",
+    id: 'graph',
+    label: 'Graph',
+    description: 'Knowledge graph',
     icon: <GitBranch className="w-4 h-4" />,
   },
   {
-    id: "account",
-    label: "Account",
-    description: "User profile",
+    id: 'account',
+    label: 'Account',
+    description: 'User profile',
     icon: <User className="w-4 h-4" />,
   },
   {
-    id: "about",
-    label: "About",
-    description: "Version & links",
+    id: 'about',
+    label: 'About',
+    description: 'Version & links',
     icon: <Info className="w-4 h-4" />,
   },
-];
+]
 
 function SidebarNavItem({
   item,
   isActive,
   onClick,
 }: {
-  item: NavItem;
-  isActive: boolean;
-  onClick: () => void;
+  item: NavItem
+  isActive: boolean
+  onClick: () => void
 }) {
   return (
     <button
       onClick={onClick}
       className={cn(
-        "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors",
-        "hover:bg-zinc-100 dark:hover:bg-zinc-800/60",
-        isActive && "bg-zinc-100 dark:bg-zinc-800/80"
+        'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors',
+        'hover:bg-zinc-100 dark:hover:bg-zinc-800/60',
+        isActive && 'bg-zinc-100 dark:bg-zinc-800/80'
       )}
     >
       <span
         className={cn(
-          "flex-shrink-0 text-zinc-500 dark:text-zinc-400",
-          isActive && "text-foreground"
+          'flex-shrink-0 text-zinc-500 dark:text-zinc-400',
+          isActive && 'text-foreground'
         )}
       >
         {item.icon}
@@ -103,43 +94,41 @@ function SidebarNavItem({
       <div className="min-w-0 flex-1">
         <p
           className={cn(
-            "text-sm font-medium truncate",
-            isActive ? "text-foreground" : "text-zinc-700 dark:text-zinc-300"
+            'text-sm font-medium truncate',
+            isActive ? 'text-foreground' : 'text-zinc-700 dark:text-zinc-300'
           )}
         >
           {item.label}
         </p>
-        <p className="text-xs text-zinc-500 dark:text-zinc-500 truncate">
-          {item.description}
-        </p>
+        <p className="text-xs text-zinc-500 dark:text-zinc-500 truncate">{item.description}</p>
       </div>
     </button>
-  );
+  )
 }
 
 export function SettingsLayout() {
-  const [activeTab, setActiveTab] = React.useState("general");
+  const [activeTab, setActiveTab] = React.useState('general')
 
   const renderContent = () => {
     switch (activeTab) {
-      case "general":
-        return <GeneralTab />;
-      case "shortcuts":
-        return <ShortcutsTab />;
-      case "actions":
-        return <ActionsTab />;
-      case "memory":
-        return <MemoryTab />;
-      case "graph":
-        return <GraphTab />;
-      case "account":
-        return <AccountTab />;
-      case "about":
-        return <AboutTab />;
+      case 'general':
+        return <GeneralTab />
+      case 'shortcuts':
+        return <ShortcutsTab />
+      case 'actions':
+        return <ActionsTab />
+      case 'memory':
+        return <MemoryTab />
+      case 'graph':
+        return <GraphTab />
+      case 'account':
+        return <AccountTab />
+      case 'about':
+        return <AboutTab />
       default:
-        return <GeneralTab />;
+        return <GeneralTab />
     }
-  };
+  }
 
   return (
     <div className="h-screen bg-white dark:bg-zinc-950 text-foreground flex overflow-hidden selection:bg-zinc-200 dark:selection:bg-zinc-800">
@@ -149,9 +138,7 @@ export function SettingsLayout() {
         <div className="flex-shrink-0 px-4 py-4 border-b border-zinc-200 dark:border-zinc-800">
           <div className="flex items-center gap-2">
             <Settings className="w-4 h-4 text-zinc-500" />
-            <span className="text-sm font-semibold text-foreground">
-              Settings
-            </span>
+            <span className="text-sm font-semibold text-foreground">Settings</span>
           </div>
         </div>
 
@@ -189,5 +176,5 @@ export function SettingsLayout() {
         {renderContent()}
       </main>
     </div>
-  );
+  )
 }

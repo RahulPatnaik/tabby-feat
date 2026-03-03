@@ -55,7 +55,7 @@ export default function DownloadPage() {
     <main className="relative min-h-screen overflow-hidden bg-black text-white pt-32 pb-24">
       <BackgroundGradient />
       <BackgroundGrid gridLineStyles={gridLineStyles} zIndex={1} />
-      
+
       <Gutter className="relative z-10">
         <div className="max-w-4xl mx-auto text-center mb-16 px-4">
           <motion.div
@@ -67,7 +67,8 @@ export default function DownloadPage() {
               Get Tabby for <span className="text-blue-500 font-serif italic">Windows</span>
             </h1>
             <p className="text-lg md:text-xl text-neutral-400 max-w-2xl mx-auto">
-              Start your journey with the intelligent keyboard layer. Experience real-time AI assistance across all your applications.
+              Start your journey with the intelligent keyboard layer. Experience real-time AI
+              assistance across all your applications.
             </p>
           </motion.div>
         </div>
@@ -84,7 +85,9 @@ export default function DownloadPage() {
                 <Monitor className="w-8 h-8 text-white" />
               </div>
               <div>
-                <h3 className="text-2xl font-medium"><span className="text-blue-500 font-serif italic">Windows</span> Desktop</h3>
+                <h3 className="text-2xl font-medium">
+                  <span className="text-blue-500 font-serif italic">Windows</span> Desktop
+                </h3>
                 <p className="text-neutral-500">Latest Stable Version • .exe</p>
               </div>
             </div>
@@ -94,21 +97,27 @@ export default function DownloadPage() {
                 <CheckCircle2 className="w-6 h-6 text-white mt-1" />
                 <div>
                   <h4 className="font-medium text-white">Universal Support</h4>
-                  <p className="text-neutral-400 text-sm">Works seamlessly with Windows 10 and 11 (64-bit).</p>
+                  <p className="text-neutral-400 text-sm">
+                    Works seamlessly with Windows 10 and 11 (64-bit).
+                  </p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
                 <CheckCircle2 className="w-6 h-6 text-white mt-1" />
                 <div>
                   <h4 className="font-medium text-white">System-Wide Integration</h4>
-                  <p className="text-neutral-400 text-sm">Access AI from any code editor, browser, or document.</p>
+                  <p className="text-neutral-400 text-sm">
+                    Access AI from any code editor, browser, or document.
+                  </p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
                 <CheckCircle2 className="w-6 h-6 text-white mt-1" />
                 <div>
                   <h4 className="font-medium text-white">Secure by Design</h4>
-                  <p className="text-neutral-400 text-sm">Your data and context stay locally processed when possible.</p>
+                  <p className="text-neutral-400 text-sm">
+                    Your data and context stay locally processed when possible.
+                  </p>
                 </div>
               </div>
             </div>
@@ -162,18 +171,18 @@ export default function DownloadPage() {
               {
                 step: '01',
                 title: 'Download',
-                desc: 'Click the download button above to get the latest installer for Windows.'
+                desc: 'Click the download button above to get the latest installer for Windows.',
               },
               {
                 step: '02',
                 title: 'Install',
-                desc: 'Run the .exe file and follow the simple on-screen instructions to set up Tabby.'
+                desc: 'Run the .exe file and follow the simple on-screen instructions to set up Tabby.',
               },
               {
                 step: '03',
                 title: 'Activate',
-                desc: 'Sign in and use Ctrl + \\ to open the action panel'
-              }
+                desc: 'Sign in and use Ctrl + \\ to open the action panel',
+              },
             ].map((item, i) => (
               <div key={i} className="flex flex-col gap-4 relative">
                 <div className="text-white/10 text-6xl font-mono absolute -top-8 -left-2 select-none z-0">
@@ -181,9 +190,7 @@ export default function DownloadPage() {
                 </div>
                 <div className="relative z-10">
                   <h3 className="text-lg font-medium text-white mb-2">{item.title}</h3>
-                  <p className="text-neutral-400 leading-relaxed text-sm">
-                    {item.desc}
-                  </p>
+                  <p className="text-neutral-400 leading-relaxed text-sm">{item.desc}</p>
                 </div>
               </div>
             ))}

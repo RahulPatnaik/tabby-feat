@@ -3,25 +3,25 @@
  * Uses environment variables with fallbacks for local development.
  */
 
-import { createSupabaseBrowser } from '@/lib/supabase/client';
-import { DefaultChatTransport, UIMessage } from 'ai';
+import { createSupabaseBrowser } from '@/lib/supabase/client'
+import { DefaultChatTransport, UIMessage } from 'ai'
 
 // Cache for the current session token (refreshed on auth state changes)
-let cachedAccessToken: string | null = null;
+let cachedAccessToken: string | null = null
 
 // Initialize the auth listener to keep the token cache updated
 if (typeof window !== 'undefined') {
-  const supabase = createSupabaseBrowser();
-  
+  const supabase = createSupabaseBrowser()
+
   // Get initial session
   supabase.auth.getSession().then(({ data: { session } }) => {
-    cachedAccessToken = session?.access_token || null;
-  });
-  
+    cachedAccessToken = session?.access_token || null
+  })
+
   // Listen for auth state changes
   supabase.auth.onAuthStateChange((_event, session) => {
-    cachedAccessToken = session?.access_token || null;
-  });
+    cachedAccessToken = session?.access_token || null
+  })
 }
 
 /**
@@ -30,8 +30,8 @@ if (typeof window !== 'undefined') {
  * @returns Full URL to the API endpoint
  */
 export function getApiUrl(path: string): string {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-  return `${baseUrl}${path}`;
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+  return `${baseUrl}${path}`
 }
 
 /**
@@ -40,8 +40,8 @@ export function getApiUrl(path: string): string {
  * @returns Full URL to the Memory API endpoint
  */
 export function getMemoryApiUrl(path: string): string {
-  const baseUrl = process.env.NEXT_PUBLIC_MEMORY_API_URL || 'http://localhost:8000';
-  return `${baseUrl}${path}`;
+  const baseUrl = process.env.NEXT_PUBLIC_MEMORY_API_URL || 'http://localhost:8000'
+  return `${baseUrl}${path}`
 }
 
 /**
@@ -52,10 +52,10 @@ export function getMemoryApiUrl(path: string): string {
 export function getAuthHeadersSync(): Record<string, string> {
   if (cachedAccessToken) {
     return {
-      'Authorization': `Bearer ${cachedAccessToken}`,
-    };
+      Authorization: `Bearer ${cachedAccessToken}`,
+    }
   }
-  return {};
+  return {}
 }
 
 /**
@@ -66,21 +66,23 @@ export function getAuthHeadersSync(): Record<string, string> {
  */
 export async function getAuthHeaders(): Promise<HeadersInit> {
   try {
-    const supabase = createSupabaseBrowser();
-    const { data: { session } } = await supabase.auth.getSession();
-    
+    const supabase = createSupabaseBrowser()
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
+
     if (session?.access_token) {
       // Also update the cache
-      cachedAccessToken = session.access_token;
+      cachedAccessToken = session.access_token
       return {
-        'Authorization': `Bearer ${session.access_token}`,
-      };
+        Authorization: `Bearer ${session.access_token}`,
+      }
     }
   } catch (error) {
-    console.error('[getAuthHeaders] Error getting session:', error);
+    console.error('[getAuthHeaders] Error getting session:', error)
   }
-  
-  return {};
+
+  return {}
 }
 
 /**
@@ -92,8 +94,8 @@ export async function getAuthHeaders(): Promise<HeadersInit> {
 export async function createAuthenticatedFetchOptions(
   options: RequestInit = {}
 ): Promise<RequestInit> {
-  const authHeaders = await getAuthHeaders();
-  
+  const authHeaders = await getAuthHeaders()
+
   return {
     ...options,
     credentials: 'include' as RequestCredentials,
@@ -101,7 +103,7 @@ export async function createAuthenticatedFetchOptions(
       ...authHeaders,
       ...options.headers,
     },
-  };
+  }
 }
 
 /**
@@ -116,5 +118,5 @@ export function createAuthenticatedChatTransport(apiPath: string): DefaultChatTr
     api: getApiUrl(apiPath),
     credentials: 'include',
     headers: () => getAuthHeadersSync(),
-  });
+  })
 }

@@ -258,13 +258,15 @@ export default function SignUp({ redirectTo }: { redirectTo: string }) {
                   // If session is set, we might need to get user from supabase or context.
                   // For now, let's assume successful verification sets the session and we can get user.
                   const supabase = createSupabaseBrowser()
-                  const { data: { user } } = await supabase.auth.getUser()
-                  
+                  const {
+                    data: { user },
+                  } = await supabase.auth.getUser()
+
                   if (user && window.electron) {
                     window.electron.setUserId(user.id)
                     console.log('User ID stored in Electron:', user.id)
                   }
-                  
+
                   setVerifyStatus('success')
                   router.push(redirectTo)
                 }

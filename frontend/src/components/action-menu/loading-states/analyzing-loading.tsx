@@ -1,29 +1,29 @@
-"use client";
+'use client'
 
-import { motion } from "motion/react";
-import { cn } from "@/lib/utils";
+import { motion } from 'motion/react'
+import { cn } from '@/lib/utils'
 
 interface AnalyzingLoadingProps {
-  className?: string;
-  isCapturing?: boolean;
+  className?: string
+  isCapturing?: boolean
 }
 
 export function AnalyzingLoading({ className, isCapturing }: AnalyzingLoadingProps) {
   const detectionBoxes = [
-    { top: "10%", left: "10%", width: "35%", height: "25%" },
-    { top: "40%", left: "50%", width: "40%", height: "30%" },
-    { top: "75%", left: "20%", width: "25%", height: "15%" },
-  ];
+    { top: '10%', left: '10%', width: '35%', height: '25%' },
+    { top: '40%', left: '50%', width: '40%', height: '30%' },
+    { top: '75%', left: '20%', width: '25%', height: '15%' },
+  ]
 
   return (
-    <div className={cn("flex flex-col items-center justify-center py-12", className)}>
+    <div className={cn('flex flex-col items-center justify-center py-12', className)}>
       <div className="relative h-32 w-48">
         <div className="absolute inset-0 rounded-lg border-2 border-border/50 bg-gradient-to-br from-muted/40 to-muted/20 backdrop-blur-sm">
           <div className="absolute inset-2 overflow-hidden rounded">
             <motion.div
               className="absolute inset-x-0 h-[30%] bg-gradient-to-b from-transparent via-primary/20 to-transparent"
-              animate={{ top: ["-30%", "100%"] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              animate={{ top: ['-30%', '100%'] }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
             />
 
             <div className="absolute inset-0 opacity-30">
@@ -36,7 +36,7 @@ export function AnalyzingLoading({ className, isCapturing }: AnalyzingLoadingPro
                   transition={{
                     duration: 1.5,
                     repeat: Infinity,
-                    ease: "easeInOut",
+                    ease: 'easeInOut',
                     delay: i * 0.1,
                   }}
                 />
@@ -56,7 +56,7 @@ export function AnalyzingLoading({ className, isCapturing }: AnalyzingLoadingPro
                 transition={{
                   duration: 2,
                   repeat: Infinity,
-                  ease: "easeOut",
+                  ease: 'easeOut',
                   delay: i * 0.4,
                 }}
               >
@@ -95,9 +95,9 @@ export function AnalyzingLoading({ className, isCapturing }: AnalyzingLoadingPro
             animate={{
               scale: [1, 1.05, 1],
               boxShadow: [
-                "0 0 0 0 rgba(var(--primary-rgb), 0.4)",
-                "0 0 20px 4px rgba(var(--primary-rgb), 0.2)",
-                "0 0 0 0 rgba(var(--primary-rgb), 0.4)",
+                '0 0 0 0 rgba(var(--primary-rgb), 0.4)',
+                '0 0 20px 4px rgba(var(--primary-rgb), 0.2)',
+                '0 0 0 0 rgba(var(--primary-rgb), 0.4)',
               ],
             }}
             transition={{ duration: 1.5, repeat: Infinity }}
@@ -123,18 +123,18 @@ export function AnalyzingLoading({ className, isCapturing }: AnalyzingLoadingPro
               key={i}
               className="absolute h-1 w-1 rounded-full bg-primary/60"
               style={{
-                left: `${10 + (i * 10) % 80}%`,
+                left: `${10 + ((i * 10) % 80)}%`,
                 top: `${10 + ((i * 15) % 80)}%`,
               }}
               animate={{
                 opacity: [0, 1, 0],
-                x: [0, (i % 2 === 0 ? 10 : -10)],
-                y: [0, (i % 2 === 0 ? -10 : 10)],
+                x: [0, i % 2 === 0 ? 10 : -10],
+                y: [0, i % 2 === 0 ? -10 : 10],
               }}
               transition={{
                 duration: 3,
                 repeat: Infinity,
-                ease: "easeInOut",
+                ease: 'easeInOut',
                 delay: i * 0.3,
               }}
             />
@@ -149,21 +149,21 @@ export function AnalyzingLoading({ className, isCapturing }: AnalyzingLoadingPro
         transition={{ duration: 0.5 }}
       >
         <span className="text-sm font-medium text-foreground">
-          {isCapturing ? "Capturing Screen" : "AI Analyzing"}
+          {isCapturing ? 'Capturing Screen' : 'AI Analyzing'}
         </span>
         <div className="flex items-center gap-2">
           <div className="relative h-1.5 w-32 overflow-hidden rounded-full bg-muted">
             <motion.div
               className="absolute h-full w-1/3 rounded-full bg-gradient-to-r from-primary/50 via-primary to-primary/50"
-              animate={{ left: ["-33%", "100%"] }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+              animate={{ left: ['-33%', '100%'] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
             />
           </div>
         </div>
         <span className="text-xs text-muted-foreground">
-          {isCapturing ? "Reading screen content..." : "Understanding the problem..."}
+          {isCapturing ? 'Reading screen content...' : 'Understanding the problem...'}
         </span>
       </motion.div>
     </div>
-  );
+  )
 }

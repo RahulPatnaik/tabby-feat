@@ -50,21 +50,37 @@ body {
   justify-content: center;
 }
 
-.mode-icon.transcribe { color: #60a5fa; }
-.mode-icon.command { color: #fb923c; }
-.mode-icon.generate { color: #c084fc; }
+.mode-icon.transcribe {
+  color: #60a5fa;
+}
+.mode-icon.command {
+  color: #fb923c;
+}
+.mode-icon.generate {
+  color: #c084fc;
+}
 
 .mode-label {
-  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  font-family:
+    'Segoe UI',
+    system-ui,
+    -apple-system,
+    sans-serif;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.8px;
   text-transform: uppercase;
 }
 
-.mode-label.transcribe { color: #60a5fa; }
-.mode-label.command { color: #fb923c; }
-.mode-label.generate { color: #c084fc; }
+.mode-label.transcribe {
+  color: #60a5fa;
+}
+.mode-label.command {
+  color: #fb923c;
+}
+.mode-label.generate {
+  color: #c084fc;
+}
 
 .separator {
   width: 1px;
@@ -90,7 +106,11 @@ body {
 }
 
 .status-text {
-  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  font-family:
+    'Segoe UI',
+    system-ui,
+    -apple-system,
+    sans-serif;
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.3px;
@@ -109,10 +129,17 @@ body {
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }

@@ -1,20 +1,33 @@
-"use client";
+'use client'
 
-import { useChat } from "@ai-sdk/react";
-import { useState, useCallback, useEffect, useRef } from "react";
-import { UIMessage } from "ai";
-import { parsePartialJson } from "@ai-sdk/ui-utils";
-import { Button } from "@/components/ui/button";
-import { Kbd } from "@/components/ui/kbd";
-import { ArrowLeft, X, BookOpen, Camera, RefreshCw, MessageSquare, Shapes, Lightbulb, GitBranch, AlertTriangle, Brain, Plus } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Conversation, ConversationContent } from "@/components/ai-elements/conversation";
-import { InterviewPromptInput } from "./interview-prompt-input";
-import { InterviewHistory } from "./interview-history";
-import { PrepChatMessages } from "./prep-chat-messages";
-import { generateUUID } from "@/lib/utils/generate-uuid";
-import { PrepAnalysis, Conversation as ConversationType } from "@/lib/ai/types";
-import { createAuthenticatedChatTransport } from "@/lib/api-url";
+import { useChat } from '@ai-sdk/react'
+import { useState, useCallback, useEffect, useRef } from 'react'
+import { UIMessage } from 'ai'
+import { parsePartialJson } from '@ai-sdk/ui-utils'
+import { Button } from '@/components/ui/button'
+import { Kbd } from '@/components/ui/kbd'
+import {
+  ArrowLeft,
+  X,
+  BookOpen,
+  Camera,
+  RefreshCw,
+  MessageSquare,
+  Shapes,
+  Lightbulb,
+  GitBranch,
+  AlertTriangle,
+  Brain,
+  Plus,
+} from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { Conversation, ConversationContent } from '@/components/ai-elements/conversation'
+import { InterviewPromptInput } from './interview-prompt-input'
+import { InterviewHistory } from './interview-history'
+import { PrepChatMessages } from './prep-chat-messages'
+import { generateUUID } from '@/lib/utils/generate-uuid'
+import { PrepAnalysis, Conversation as ConversationType } from '@/lib/ai/types'
+import { createAuthenticatedChatTransport } from '@/lib/api-url'
 import {
   getPrepConversations,
   getConversationMessages,
@@ -23,14 +36,14 @@ import {
   saveMessages,
   getChatById,
   generateLocalTitle,
-} from "@/lib/local-db";
+} from '@/lib/local-db'
 import {
   PrepPatternTab,
   PrepHintsTab,
   PrepSimilarTab,
   PrepMistakesTab,
   PrepMemoriesTab,
-} from "./prep-tabs";
+} from './prep-tabs'
 import {
   AnalyzingPrepLoading,
   PatternLoading,
@@ -38,231 +51,250 @@ import {
   SimilarLoading,
   MistakesLoading,
   PrepMemoriesLoading,
-} from "./loading-states/prep-loading-states";
+} from './loading-states/prep-loading-states'
 
 interface PrepModePanelProps {
-  onBack: () => void;
-  onClose: () => void;
+  onBack: () => void
+  onClose: () => void
 }
 
 const TABS = [
-  { id: "chat", label: "Chat", shortcut: "1", Icon: MessageSquare },
-  { id: "pattern", label: "Pattern", shortcut: "2", Icon: Shapes },
-  { id: "hints", label: "Hints", shortcut: "3", Icon: Lightbulb },
-  { id: "similar", label: "Similar", shortcut: "4", Icon: GitBranch },
-  { id: "mistakes", label: "Mistakes", shortcut: "5", Icon: AlertTriangle },
-  { id: "memories", label: "Memories", shortcut: "6", Icon: Brain },
-] as const;
+  { id: 'chat', label: 'Chat', shortcut: '1', Icon: MessageSquare },
+  { id: 'pattern', label: 'Pattern', shortcut: '2', Icon: Shapes },
+  { id: 'hints', label: 'Hints', shortcut: '3', Icon: Lightbulb },
+  { id: 'similar', label: 'Similar', shortcut: '4', Icon: GitBranch },
+  { id: 'mistakes', label: 'Mistakes', shortcut: '5', Icon: AlertTriangle },
+  { id: 'memories', label: 'Memories', shortcut: '6', Icon: Brain },
+] as const
 
-type TabId = (typeof TABS)[number]["id"];
+type TabId = (typeof TABS)[number]['id']
 
 export function PrepModePanel({ onBack, onClose }: PrepModePanelProps) {
-  const [activeTab, setActiveTab] = useState<TabId>("chat");
-  const [isCapturing, setIsCapturing] = useState(false);
-  const [activeConversationId, setActiveConversationId] = useState<string>(() => generateUUID());
-  const activeConversationIdRef = useRef(activeConversationId);
-  const [conversations, setConversations] = useState<ConversationType[]>([]);
-  const [hintLevel, setHintLevel] = useState(1);
+  const [activeTab, setActiveTab] = useState<TabId>('chat')
+  const [isCapturing, setIsCapturing] = useState(false)
+  const [activeConversationId, setActiveConversationId] = useState<string>(() => generateUUID())
+  const activeConversationIdRef = useRef(activeConversationId)
+  const [conversations, setConversations] = useState<ConversationType[]>([])
+  const [hintLevel, setHintLevel] = useState(1)
 
   const { messages, status, sendMessage, setMessages } = useChat({
-    transport: createAuthenticatedChatTransport("/api/prep-mode"),
+    transport: createAuthenticatedChatTransport('/api/prep-mode'),
     generateId: () => generateUUID(),
     onError: (error) => {
-      console.error("Prep Mode error:", error);
+      console.error('Prep Mode error:', error)
     },
     onFinish: async ({ messages: allMessages }) => {
-      const currentId = activeConversationIdRef.current;
+      const currentId = activeConversationIdRef.current
       try {
-        const existing = await getChatById(currentId);
+        const existing = await getChatById(currentId)
         if (!existing && allMessages.length > 0) {
-          const firstUserMsg = allMessages.find((m) => m.role === "user");
-          const title = firstUserMsg
-            ? generateLocalTitle(firstUserMsg)
-            : "Prep Session";
-          await saveChat({ id: currentId, title, type: "prep" });
+          const firstUserMsg = allMessages.find((m) => m.role === 'user')
+          const title = firstUserMsg ? generateLocalTitle(firstUserMsg) : 'Prep Session'
+          await saveChat({ id: currentId, title, type: 'prep' })
         }
         if (allMessages.length > 0) {
-          await saveMessages(allMessages, currentId);
+          await saveMessages(allMessages, currentId)
         }
       } catch (error) {
-        console.error("Error persisting prep session locally:", error);
+        console.error('Error persisting prep session locally:', error)
       }
-      loadConversations();
+      loadConversations()
     },
-  });
+  })
 
   const loadConversations = useCallback(async () => {
     try {
-      const data = await getPrepConversations();
-      setConversations(data);
+      const data = await getPrepConversations()
+      setConversations(data)
     } catch (error) {
-      console.error("Error loading conversations:", error);
+      console.error('Error loading conversations:', error)
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
-    loadConversations();
-  }, [loadConversations]);
+    loadConversations()
+  }, [loadConversations])
 
-  const handleSwitchConversation = useCallback(async (conversationId: string) => {
-    setActiveConversationId(conversationId);
-    activeConversationIdRef.current = conversationId;
-    try {
-      const msgs = await getConversationMessages(conversationId);
-      setMessages(msgs);
-    } catch (error) {
-      console.error("Error loading messages:", error);
-    }
-  }, [setMessages]);
+  const handleSwitchConversation = useCallback(
+    async (conversationId: string) => {
+      setActiveConversationId(conversationId)
+      activeConversationIdRef.current = conversationId
+      try {
+        const msgs = await getConversationMessages(conversationId)
+        setMessages(msgs)
+      } catch (error) {
+        console.error('Error loading messages:', error)
+      }
+    },
+    [setMessages]
+  )
 
   const handleNewConversation = useCallback(() => {
-    const newId = generateUUID();
-    setActiveConversationId(newId);
-    activeConversationIdRef.current = newId;
-    setMessages([]);
-    setHintLevel(1);
-  }, [setMessages]);
+    const newId = generateUUID()
+    setActiveConversationId(newId)
+    activeConversationIdRef.current = newId
+    setMessages([])
+    setHintLevel(1)
+  }, [setMessages])
 
-  const handleDeleteConversation = useCallback(async (e: React.MouseEvent, conversationId: string) => {
-    e.stopPropagation();
-    try {
-      await deleteConversation(conversationId);
-      setConversations((prev) => prev.filter((c) => c.id !== conversationId));
-      if (activeConversationId === conversationId) {
-        handleNewConversation();
+  const handleDeleteConversation = useCallback(
+    async (e: React.MouseEvent, conversationId: string) => {
+      e.stopPropagation()
+      try {
+        await deleteConversation(conversationId)
+        setConversations((prev) => prev.filter((c) => c.id !== conversationId))
+        if (activeConversationId === conversationId) {
+          handleNewConversation()
+        }
+      } catch (error) {
+        console.error('Error deleting conversation:', error)
       }
-    } catch (error) {
-      console.error("Error deleting conversation:", error);
-    }
-  }, [activeConversationId, handleNewConversation]);
+    },
+    [activeConversationId, handleNewConversation]
+  )
 
-  const sendWithScreenshot = useCallback((text: string, screenshot?: string) => {
-    const body: Record<string, unknown> = {
-      conversationId: activeConversationId,
-      hintLevel,
-    };
+  const sendWithScreenshot = useCallback(
+    (text: string, screenshot?: string) => {
+      const body: Record<string, unknown> = {
+        conversationId: activeConversationId,
+        hintLevel,
+      }
 
-    if (screenshot) {
-      body.screenshot = screenshot;
-    }
+      if (screenshot) {
+        body.screenshot = screenshot
+      }
 
-    sendMessage(
-      { parts: [{ type: "text", text }] },
-      { body }
-    );
-  }, [sendMessage, activeConversationId, hintLevel]);
+      sendMessage({ parts: [{ type: 'text', text }] }, { body })
+    },
+    [sendMessage, activeConversationId, hintLevel]
+  )
 
   const handleAnalyze = useCallback(async () => {
-    setIsCapturing(true);
+    setIsCapturing(true)
     try {
-      const screenshot = await (window.electron as { captureScreen?: () => Promise<string> })?.captureScreen?.();
-      sendWithScreenshot("Analyze this coding problem. Identify the pattern, provide progressive hints, find similar problems, and check for my past mistakes on this pattern.", screenshot);
+      const screenshot = await (
+        window.electron as { captureScreen?: () => Promise<string> }
+      )?.captureScreen?.()
+      sendWithScreenshot(
+        'Analyze this coding problem. Identify the pattern, provide progressive hints, find similar problems, and check for my past mistakes on this pattern.',
+        screenshot
+      )
     } catch (error) {
-      console.error("Capture error:", error);
+      console.error('Capture error:', error)
     }
-    setIsCapturing(false);
-  }, [sendWithScreenshot]);
+    setIsCapturing(false)
+  }, [sendWithScreenshot])
 
   const handleUpdate = useCallback(async () => {
-    setIsCapturing(true);
+    setIsCapturing(true)
     try {
-      const screenshot = await (window.electron as { captureScreen?: () => Promise<string> })?.captureScreen?.();
-      sendWithScreenshot("Update the analysis with the current state. I may have made progress or gotten stuck.", screenshot);
+      const screenshot = await (
+        window.electron as { captureScreen?: () => Promise<string> }
+      )?.captureScreen?.()
+      sendWithScreenshot(
+        'Update the analysis with the current state. I may have made progress or gotten stuck.',
+        screenshot
+      )
     } catch (error) {
-      console.error("Capture error:", error);
+      console.error('Capture error:', error)
     }
-    setIsCapturing(false);
-  }, [sendWithScreenshot]);
+    setIsCapturing(false)
+  }, [sendWithScreenshot])
 
-  const handleCustomPrompt = useCallback(async (prompt: string, includeScreenshot: boolean) => {
-    try {
-      let screenshot: string | undefined;
-      
-      if (includeScreenshot) {
-        setIsCapturing(true);
-        screenshot = await (window.electron as { captureScreen?: () => Promise<string> })?.captureScreen?.();
+  const handleCustomPrompt = useCallback(
+    async (prompt: string, includeScreenshot: boolean) => {
+      try {
+        let screenshot: string | undefined
+
+        if (includeScreenshot) {
+          setIsCapturing(true)
+          screenshot = await (
+            window.electron as { captureScreen?: () => Promise<string> }
+          )?.captureScreen?.()
+        }
+
+        sendWithScreenshot(prompt, screenshot)
+      } catch (error) {
+        console.error('Capture error:', error)
+      } finally {
+        setIsCapturing(false)
       }
-      
-      sendWithScreenshot(prompt, screenshot);
-    } catch (error) {
-      console.error("Capture error:", error);
-    } finally {
-      setIsCapturing(false);
-    }
-  }, [sendWithScreenshot]);
+    },
+    [sendWithScreenshot]
+  )
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.key >= "1" && e.key <= "6") {
-        e.preventDefault();
-        const tabIndex = parseInt(e.key) - 1;
-        setActiveTab(TABS[tabIndex].id);
-        return;
+      if (e.ctrlKey && e.key >= '1' && e.key <= '6') {
+        e.preventDefault()
+        const tabIndex = parseInt(e.key) - 1
+        setActiveTab(TABS[tabIndex].id)
+        return
       }
 
-      if (e.altKey && e.key.toLowerCase() === "p" && !e.shiftKey) {
-        e.preventDefault();
-        handleAnalyze();
-        return;
+      if (e.altKey && e.key.toLowerCase() === 'p' && !e.shiftKey) {
+        e.preventDefault()
+        handleAnalyze()
+        return
       }
 
-      if (e.altKey && e.shiftKey && e.key.toLowerCase() === "p") {
-        e.preventDefault();
-        handleUpdate();
-        return;
+      if (e.altKey && e.shiftKey && e.key.toLowerCase() === 'p') {
+        e.preventDefault()
+        handleUpdate()
+        return
       }
 
-      if (e.altKey && e.key >= "1" && e.key <= "5") {
-        e.preventDefault();
-        setHintLevel(parseInt(e.key));
-        setActiveTab("hints");
-        return;
+      if (e.altKey && e.key >= '1' && e.key <= '5') {
+        e.preventDefault()
+        setHintLevel(parseInt(e.key))
+        setActiveTab('hints')
+        return
       }
 
-      if (e.ctrlKey && e.key.toLowerCase() === "n") {
-        e.preventDefault();
-        handleNewConversation();
-        return;
+      if (e.ctrlKey && e.key.toLowerCase() === 'n') {
+        e.preventDefault()
+        handleNewConversation()
+        return
       }
 
-      if (e.key === "Escape") {
-        e.preventDefault();
-        onBack();
-        return;
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        onBack()
+        return
       }
-    };
+    }
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleAnalyze, handleUpdate, handleNewConversation, onBack]);
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [handleAnalyze, handleUpdate, handleNewConversation, onBack])
 
-  const isLoading = status === "streaming" || status === "submitted" || isCapturing;
+  const isLoading = status === 'streaming' || status === 'submitted' || isCapturing
 
   const getAnalysisFromMessage = (msg: UIMessage): PrepAnalysis | null => {
-    const metadata = (msg as UIMessage & { metadata?: { analysis?: PrepAnalysis } }).metadata;
+    const metadata = (msg as UIMessage & { metadata?: { analysis?: PrepAnalysis } }).metadata
     if (metadata?.analysis) {
-      return metadata.analysis as PrepAnalysis;
+      return metadata.analysis as PrepAnalysis
     }
-    
-    const textPart = msg.parts?.find((p) => p.type === "text");
-    if (textPart && "text" in textPart) {
-      const result = parsePartialJson(textPart.text);
-      if (result.value && ["repaired-parse", "successful-parse"].includes(result.state)) {
-        return result.value as PrepAnalysis;
+
+    const textPart = msg.parts?.find((p) => p.type === 'text')
+    if (textPart && 'text' in textPart) {
+      const result = parsePartialJson(textPart.text)
+      if (result.value && ['repaired-parse', 'successful-parse'].includes(result.state)) {
+        return result.value as PrepAnalysis
       }
     }
-    return null;
-  };
+    return null
+  }
 
   const getLatestAnalysis = (): PrepAnalysis | null => {
-    const assistantMessages = messages.filter(m => m.role === "assistant");
-    if (assistantMessages.length === 0) return null;
-    return getAnalysisFromMessage(assistantMessages[assistantMessages.length - 1]);
-  };
+    const assistantMessages = messages.filter((m) => m.role === 'assistant')
+    if (assistantMessages.length === 0) return null
+    return getAnalysisFromMessage(assistantMessages[assistantMessages.length - 1])
+  }
 
   const renderContent = () => {
-    const analysis = getLatestAnalysis();
-    
+    const analysis = getLatestAnalysis()
+
     if (messages.length === 0 && !isLoading) {
       return (
         <div className="flex flex-1 flex-col items-center justify-center text-center text-muted-foreground">
@@ -272,86 +304,75 @@ export function PrepModePanel({ onBack, onClose }: PrepModePanelProps) {
             Press <Kbd>Alt+P</Kbd> to analyze a LeetCode problem
           </p>
         </div>
-      );
+      )
     }
 
-    if (activeTab === "chat") {
+    if (activeTab === 'chat') {
       return (
         <Conversation>
           <ConversationContent>
-            <PrepChatMessages 
-              messages={messages} 
-              isLoading={isLoading} 
-              isCapturing={isCapturing}
-            />
+            <PrepChatMessages messages={messages} isLoading={isLoading} isCapturing={isCapturing} />
           </ConversationContent>
         </Conversation>
-      );
+      )
     }
 
-    if (activeTab === "memories") {
+    if (activeTab === 'memories') {
       const allMemories = messages
-        .filter(m => m.role === "assistant")
-        .flatMap(m => getAnalysisFromMessage(m)?.memories || [])
-        .filter(Boolean);
-      
-      if (allMemories.length === 0 && (status === "streaming" || status === "submitted")) {
+        .filter((m) => m.role === 'assistant')
+        .flatMap((m) => getAnalysisFromMessage(m)?.memories || [])
+        .filter(Boolean)
+
+      if (allMemories.length === 0 && (status === 'streaming' || status === 'submitted')) {
         return (
           <div className="flex flex-1 items-center justify-center">
             <PrepMemoriesLoading />
           </div>
-        );
+        )
       }
 
-      return <PrepMemoriesTab memories={allMemories as Array<{ memory?: string; createdAt?: string }>} />;
+      return (
+        <PrepMemoriesTab memories={allMemories as Array<{ memory?: string; createdAt?: string }>} />
+      )
     }
 
-    if (!analysis && (status === "submitted" || status === "streaming")) {
+    if (!analysis && (status === 'submitted' || status === 'streaming')) {
       const renderLoadingState = () => {
         switch (activeTab) {
-          case "pattern":
-            return <PatternLoading />;
-          case "hints":
-            return <HintsLoading />;
-          case "similar":
-            return <SimilarLoading />;
-          case "mistakes":
-            return <MistakesLoading />;
+          case 'pattern':
+            return <PatternLoading />
+          case 'hints':
+            return <HintsLoading />
+          case 'similar':
+            return <SimilarLoading />
+          case 'mistakes':
+            return <MistakesLoading />
           default:
-            return <AnalyzingPrepLoading />;
+            return <AnalyzingPrepLoading />
         }
-      };
-      return (
-        <div className="flex flex-1 items-center justify-center">
-          {renderLoadingState()}
-        </div>
-      );
+      }
+      return <div className="flex flex-1 items-center justify-center">{renderLoadingState()}</div>
     }
 
     switch (activeTab) {
-      case "pattern":
+      case 'pattern':
         return (
           <PrepPatternTab
             pattern={analysis?.pattern}
             difficulty={analysis?.difficulty}
             complexity={analysis?.complexity}
           />
-        );
-      case "hints":
-        return (
-          <PrepHintsTab
-            hints={analysis?.hints}
-            maxVisibleLevel={hintLevel}
-          />
-        );
-      case "similar":
-        return <PrepSimilarTab similar={analysis?.similar} />;
-      case "mistakes":
-        return <PrepMistakesTab mistakes={analysis?.mistakes} />;
+        )
+      case 'hints':
+        return <PrepHintsTab hints={analysis?.hints} maxVisibleLevel={hintLevel} />
+      case 'similar':
+        return <PrepSimilarTab similar={analysis?.similar} />
+      case 'mistakes':
+        return <PrepMistakesTab mistakes={analysis?.mistakes} />
       default:
-        return null;
+        return null
     }
-  };
+  }
 
   return (
     <div className="relative flex h-full flex-col">
@@ -392,7 +413,12 @@ export function PrepModePanel({ onBack, onClose }: PrepModePanelProps) {
             onDelete={handleDeleteConversation}
             disabled={isLoading}
           />
-          <Button variant="ghost" size="icon-sm" onClick={handleNewConversation} disabled={isLoading}>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={handleNewConversation}
+            disabled={isLoading}
+          >
             <Plus className="h-4 w-4" />
           </Button>
           <Button variant="ghost" size="icon-sm" onClick={onClose}>
@@ -407,10 +433,10 @@ export function PrepModePanel({ onBack, onClose }: PrepModePanelProps) {
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={cn(
-              "flex flex-1 items-center justify-center gap-1.5 px-2 py-2 text-sm font-medium transition-colors border-b-2",
+              'flex flex-1 items-center justify-center gap-1.5 px-2 py-2 text-sm font-medium transition-colors border-b-2',
               activeTab === tab.id
-                ? "border-primary text-primary"
-                : "border-transparent text-muted-foreground hover:text-foreground"
+                ? 'border-primary text-primary'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
             )}
           >
             <tab.Icon className="h-3.5 w-3.5" />
@@ -420,9 +446,7 @@ export function PrepModePanel({ onBack, onClose }: PrepModePanelProps) {
         ))}
       </div>
 
-      <div className="flex-1 min-h-0 flex flex-col overflow-auto pb-10">
-        {renderContent()}
-      </div>
+      <div className="flex-1 min-h-0 flex flex-col overflow-auto pb-10">{renderContent()}</div>
 
       <div className="absolute bottom-[3rem] left-4 right-4 z-20">
         <InterviewPromptInput
@@ -449,5 +473,5 @@ export function PrepModePanel({ onBack, onClose }: PrepModePanelProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }

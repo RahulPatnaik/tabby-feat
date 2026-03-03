@@ -65,7 +65,6 @@ export default function SignIn() {
   )
 }
 
-
 export function SignInForm({ redirectTo }: { redirectTo: string }) {
   const [passwordReveal, setPasswordReveal] = useState(false)
   const [isPending, startTransition] = useTransition()
@@ -90,10 +89,10 @@ export function SignInForm({ redirectTo }: { redirectTo: string }) {
         } else {
           // Store user ID in Electron store
           if (window.electron && authData.user) {
-            window.electron.setUserId(authData.user.id);
-            console.log('User ID stored in Electron:', authData.user.id);
+            window.electron.setUserId(authData.user.id)
+            console.log('User ID stored in Electron:', authData.user.id)
           }
-          
+
           router.push(redirectTo)
           router.refresh()
         }

@@ -1,252 +1,253 @@
-"use client";
+'use client'
 
-import { useState, useEffect, useCallback, useRef } from "react";
-import { useTheme } from "next-themes";
-import { useChat } from "@ai-sdk/react";
-import { Action, ActionType } from "@/lib/ai/types";
-import { loadActions, getActionPrompt, getActionByShortcut } from "@/lib/ai/actions-store";
-import { createAuthenticatedChatTransport } from "@/lib/api-url";
-import { ActionList } from "./action-list";
-import { ResultPanel } from "./result-panel";
-import { ChatPanel } from "./chat-panel";
-import { InterviewCopilotPanel } from "./interview-copilot-panel";
-import { TextAgentPanel } from "./text-agent-panel";
-import { VoiceAgentPanel } from "./voice-agent-panel";
-import { HomescreenLayout } from "./homescreen-layout";
-import { Kbd } from "@/components/ui/kbd";
-import { Search, Settings, Sun, Moon, LayoutGrid, List, Eye, EyeOff } from "lucide-react";
-import { generateUUID } from "@/lib/utils/generate-uuid";
+import { useState, useEffect, useCallback, useRef } from 'react'
+import { useTheme } from 'next-themes'
+import { useChat } from '@ai-sdk/react'
+import { Action, ActionType } from '@/lib/ai/types'
+import { loadActions, getActionPrompt, getActionByShortcut } from '@/lib/ai/actions-store'
+import { createAuthenticatedChatTransport } from '@/lib/api-url'
+import { ActionList } from './action-list'
+import { ResultPanel } from './result-panel'
+import { ChatPanel } from './chat-panel'
+import { InterviewCopilotPanel } from './interview-copilot-panel'
+import { TextAgentPanel } from './text-agent-panel'
+import { VoiceAgentPanel } from './voice-agent-panel'
+import { HomescreenLayout } from './homescreen-layout'
+import { Kbd } from '@/components/ui/kbd'
+import { Search, Settings, Sun, Moon, LayoutGrid, List, Eye, EyeOff } from 'lucide-react'
+import { generateUUID } from '@/lib/utils/generate-uuid'
 
-const LAYOUT_MODE_KEY = "ai-keyboard-layout-mode";
+const LAYOUT_MODE_KEY = 'ai-keyboard-layout-mode'
 
 interface ActionMenuProps {
-  selectedText: string;
-  onClose: () => void;
-  onReplace: (text: string) => void;
+  selectedText: string
+  onClose: () => void
+  onReplace: (text: string) => void
 }
 
-export function ActionMenu({
-  selectedText,
-  onClose,
-  onReplace,
-}: ActionMenuProps) {
-  const [filter, setFilter] = useState("");
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [currentAction, setCurrentAction] = useState<Action | null>(null);
-  const [customPrompt, setCustomPrompt] = useState("");
-  const [showCustomInput, setShowCustomInput] = useState(false);
-  const [showChatMode, setShowChatMode] = useState(false);
-  const [showCopilotMode, setShowCopilotMode] = useState(false);
-  const [showTextAgentMode, setShowTextAgentMode] = useState(false);
-  const [showVoiceAgentMode, setShowVoiceAgentMode] = useState(false);
-  const [layoutMode, setLayoutMode] = useState<"command-palette" | "homescreen">("command-palette");
-  const [invisibilityEnabled, setInvisibilityEnabled] = useState(true);
-  const [allActions, setAllActions] = useState<Action[]>([]);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const { theme, setTheme } = useTheme();
+export function ActionMenu({ selectedText, onClose, onReplace }: ActionMenuProps) {
+  const [filter, setFilter] = useState('')
+  const [selectedIndex, setSelectedIndex] = useState(0)
+  const [currentAction, setCurrentAction] = useState<Action | null>(null)
+  const [customPrompt, setCustomPrompt] = useState('')
+  const [showCustomInput, setShowCustomInput] = useState(false)
+  const [showChatMode, setShowChatMode] = useState(false)
+  const [showCopilotMode, setShowCopilotMode] = useState(false)
+  const [showTextAgentMode, setShowTextAgentMode] = useState(false)
+  const [showVoiceAgentMode, setShowVoiceAgentMode] = useState(false)
+  const [layoutMode, setLayoutMode] = useState<'command-palette' | 'homescreen'>('command-palette')
+  const [invisibilityEnabled, setInvisibilityEnabled] = useState(true)
+  const [allActions, setAllActions] = useState<Action[]>([])
+  const inputRef = useRef<HTMLInputElement>(null)
+  const { theme, setTheme } = useTheme()
 
   const { messages, status, sendMessage, setMessages } = useChat({
-    transport: createAuthenticatedChatTransport("/api/completion"),
+    transport: createAuthenticatedChatTransport('/api/completion'),
     generateId: () => generateUUID(),
     onError: (error) => {
-      console.error("Completion error:", error);
+      console.error('Completion error:', error)
     },
-  });
+  })
 
-  const isLoading = status === "streaming" || status === "submitted";
+  const isLoading = status === 'streaming' || status === 'submitted'
 
-  const lastAssistantMessage = messages
-    .filter(m => m.role === "assistant")
-    .pop();
-  const completion = lastAssistantMessage?.parts
-    ?.filter(p => p.type === "text")
-    .map(p => p.text)
-    .join("") || "";
+  const lastAssistantMessage = messages.filter((m) => m.role === 'assistant').pop()
+  const completion =
+    lastAssistantMessage?.parts
+      ?.filter((p) => p.type === 'text')
+      .map((p) => p.text)
+      .join('') || ''
 
   useEffect(() => {
-    setAllActions(loadActions());
+    setAllActions(loadActions())
     // Load layout mode from localStorage
-    const storedLayoutMode = localStorage.getItem(LAYOUT_MODE_KEY) as "command-palette" | "homescreen" | null;
+    const storedLayoutMode = localStorage.getItem(LAYOUT_MODE_KEY) as
+      | 'command-palette'
+      | 'homescreen'
+      | null
     if (storedLayoutMode) {
-      setLayoutMode(storedLayoutMode);
+      setLayoutMode(storedLayoutMode)
     }
     // Load invisibility state from electron
     window.electron?.getContentProtectionEnabled?.().then((enabled: boolean) => {
-      setInvisibilityEnabled(enabled);
-    });
-  }, []);
+      setInvisibilityEnabled(enabled)
+    })
+  }, [])
 
   const filteredActions = allActions
-    .filter((action) => action.id !== "text-agent") // Text Agent only for grid view
-    .filter((action) => action.label.toLowerCase().includes(filter.toLowerCase()));
+    .filter((action) => action.id !== 'text-agent') // Text Agent only for grid view
+    .filter((action) => action.label.toLowerCase().includes(filter.toLowerCase()))
 
   const handleActionSelect = useCallback(
     async (action: Action) => {
-      if (action.id === "chat") {
-        setShowChatMode(true);
-        return;
+      if (action.id === 'chat') {
+        setShowChatMode(true)
+        return
       }
 
-      if (action.id === "interview-copilot") {
-        setShowCopilotMode(true);
-        return;
+      if (action.id === 'interview-copilot') {
+        setShowCopilotMode(true)
+        return
       }
 
-      if (action.id === "text-agent") {
-        setShowTextAgentMode(true);
-        return;
+      if (action.id === 'text-agent') {
+        setShowTextAgentMode(true)
+        return
       }
 
-      if (action.id === "voice-agent") {
-        setShowVoiceAgentMode(true);
-        return;
+      if (action.id === 'voice-agent') {
+        setShowVoiceAgentMode(true)
+        return
       }
 
-      if (action.id === "custom") {
-        setShowCustomInput(true);
-        return;
+      if (action.id === 'custom') {
+        setShowCustomInput(true)
+        return
       }
 
-      setCurrentAction(action);
-      setMessages([]);
+      setCurrentAction(action)
+      setMessages([])
 
-      const prompt = getActionPrompt(action);
+      const prompt = getActionPrompt(action)
       sendMessage(
         {
-          parts: [{
-            type: "text",
-            text: selectedText
-          }]
+          parts: [
+            {
+              type: 'text',
+              text: selectedText,
+            },
+          ],
         },
         {
           body: { action: action.id as ActionType, customPrompt: prompt },
         }
-      );
+      )
     },
     [sendMessage, selectedText, setMessages]
-  );
+  )
 
   const handleCustomSubmit = useCallback(async () => {
-    const customAction = allActions.find((a) => a.id === "custom");
-    if (!customAction) return;
+    const customAction = allActions.find((a) => a.id === 'custom')
+    if (!customAction) return
 
-    setCurrentAction(customAction);
-    setShowCustomInput(false);
-    setMessages([]);
+    setCurrentAction(customAction)
+    setShowCustomInput(false)
+    setMessages([])
     sendMessage(
       {
-        parts: [{
-          type: "text",
-          text: selectedText
-        }]
+        parts: [
+          {
+            type: 'text',
+            text: selectedText,
+          },
+        ],
       },
       {
-        body: { action: "custom" as ActionType, customPrompt },
+        body: { action: 'custom' as ActionType, customPrompt },
       }
-    );
-  }, [allActions, sendMessage, customPrompt, selectedText, setMessages]);
+    )
+  }, [allActions, sendMessage, customPrompt, selectedText, setMessages])
 
   const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText(completion);
-  }, [completion]);
+    navigator.clipboard.writeText(completion)
+  }, [completion])
 
   const handlePaste = useCallback(() => {
     if (completion) {
-      onReplace(completion);
+      onReplace(completion)
     }
-  }, [completion, onReplace]);
+  }, [completion, onReplace])
 
   const handleBack = useCallback(() => {
-    setCurrentAction(null);
-    setMessages([]);
-    setShowCustomInput(false);
-    setShowChatMode(false);
-    setShowCopilotMode(false);
-    setShowTextAgentMode(false);
-    setShowVoiceAgentMode(false);
-  }, [setMessages]);
+    setCurrentAction(null)
+    setMessages([])
+    setShowCustomInput(false)
+    setShowChatMode(false)
+    setShowCopilotMode(false)
+    setShowTextAgentMode(false)
+    setShowVoiceAgentMode(false)
+  }, [setMessages])
 
-  const handleAgentSelect = useCallback((agentId: string) => {
-    const action = allActions.find(a => a.id === agentId);
-    if (action) {
-      handleActionSelect(action);
-    }
-  }, [allActions, handleActionSelect]);
+  const handleAgentSelect = useCallback(
+    (agentId: string) => {
+      const action = allActions.find((a) => a.id === agentId)
+      if (action) {
+        handleActionSelect(action)
+      }
+    },
+    [allActions, handleActionSelect]
+  )
 
   const toggleLayout = useCallback(() => {
-    const newMode = layoutMode === "command-palette" ? "homescreen" : "command-palette";
-    setLayoutMode(newMode);
-    localStorage.setItem(LAYOUT_MODE_KEY, newMode);
-  }, [layoutMode]);
+    const newMode = layoutMode === 'command-palette' ? 'homescreen' : 'command-palette'
+    setLayoutMode(newMode)
+    localStorage.setItem(LAYOUT_MODE_KEY, newMode)
+  }, [layoutMode])
 
   const toggleInvisibility = useCallback(() => {
-    const newValue = !invisibilityEnabled;
-    setInvisibilityEnabled(newValue);
-    window.electron?.setContentProtectionEnabled?.(newValue);
-  }, [invisibilityEnabled]);
+    const newValue = !invisibilityEnabled
+    setInvisibilityEnabled(newValue)
+    window.electron?.setContentProtectionEnabled?.(newValue)
+  }, [invisibilityEnabled])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (showChatMode || showCopilotMode || showTextAgentMode || showVoiceAgentMode) return;
+      if (showChatMode || showCopilotMode || showTextAgentMode || showVoiceAgentMode) return
 
-      if (e.key === "Escape") {
+      if (e.key === 'Escape') {
         if (currentAction || showCustomInput) {
-          handleBack();
+          handleBack()
         } else {
-          onClose();
+          onClose()
         }
-        return;
+        return
       }
 
       if (showCustomInput) {
-        if (e.key === "Enter" && customPrompt.trim()) {
-          handleCustomSubmit();
+        if (e.key === 'Enter' && customPrompt.trim()) {
+          handleCustomSubmit()
         }
-        return;
+        return
       }
 
       if (currentAction) {
-        if (e.key === "Enter") {
-          handlePaste();
+        if (e.key === 'Enter') {
+          handlePaste()
         }
-        return;
+        return
       }
 
       if (e.altKey && e.key.length === 1) {
-        const action = getActionByShortcut(allActions, e.key);
+        const action = getActionByShortcut(allActions, e.key)
         if (action) {
-          e.preventDefault();
-          handleActionSelect(action);
-          return;
+          e.preventDefault()
+          handleActionSelect(action)
+          return
         }
       }
 
-      if (e.key === "Tab") {
-        e.preventDefault();
-        const chatAction = allActions.find(a => a.id === "chat");
+      if (e.key === 'Tab') {
+        e.preventDefault()
+        const chatAction = allActions.find((a) => a.id === 'chat')
         if (chatAction) {
-          handleActionSelect(chatAction);
+          handleActionSelect(chatAction)
         }
-        return;
+        return
       }
 
-      if (e.key === "ArrowDown") {
-        e.preventDefault();
-        setSelectedIndex((prev) =>
-          prev < filteredActions.length - 1 ? prev + 1 : 0
-        );
-      } else if (e.key === "ArrowUp") {
-        e.preventDefault();
-        setSelectedIndex((prev) =>
-          prev > 0 ? prev - 1 : filteredActions.length - 1
-        );
-      } else if (e.key === "Enter" && filteredActions[selectedIndex]) {
-        handleActionSelect(filteredActions[selectedIndex]);
+      if (e.key === 'ArrowDown') {
+        e.preventDefault()
+        setSelectedIndex((prev) => (prev < filteredActions.length - 1 ? prev + 1 : 0))
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault()
+        setSelectedIndex((prev) => (prev > 0 ? prev - 1 : filteredActions.length - 1))
+      } else if (e.key === 'Enter' && filteredActions[selectedIndex]) {
+        handleActionSelect(filteredActions[selectedIndex])
       }
-    };
+    }
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
   }, [
     allActions,
     currentAction,
@@ -260,19 +261,14 @@ export function ActionMenu({
     handleCustomSubmit,
     handlePaste,
     onClose,
-  ]);
+  ])
 
   useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
+    inputRef.current?.focus()
+  }, [])
 
   if (showVoiceAgentMode) {
-    return (
-      <VoiceAgentPanel
-        onBack={handleBack}
-        onClose={onClose}
-      />
-    );
+    return <VoiceAgentPanel onBack={handleBack} onClose={onClose} />
   }
 
   if (showTextAgentMode) {
@@ -283,41 +279,29 @@ export function ActionMenu({
         onClose={onClose}
         onReplace={onReplace}
       />
-    );
+    )
   }
 
   if (showCopilotMode) {
-    return (
-      <InterviewCopilotPanel
-        onBack={handleBack}
-        onClose={onClose}
-        onReplace={onReplace}
-      />
-    );
+    return <InterviewCopilotPanel onBack={handleBack} onClose={onClose} onReplace={onReplace} />
   }
 
   if (showChatMode) {
-    return (
-      <ChatPanel
-        selectedText={selectedText}
-        onBack={handleBack}
-        onClose={onClose}
-      />
-    );
+    return <ChatPanel selectedText={selectedText} onBack={handleBack} onClose={onClose} />
   }
 
   if (currentAction) {
     return (
       <ResultPanel
         actionLabel={currentAction.label}
-        messages={messages.filter(m => m.role === "assistant")}
+        messages={messages.filter((m) => m.role === 'assistant')}
         isLoading={isLoading}
         onBack={handleBack}
         onClose={onClose}
         onCopy={handleCopy}
         onPaste={handlePaste}
       />
-    );
+    )
   }
 
   if (showCustomInput) {
@@ -344,12 +328,12 @@ export function ActionMenu({
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   // Homescreen layout
-  if (layoutMode === "homescreen") {
-    return <HomescreenLayout onSelectAgent={handleAgentSelect} onToggleLayout={toggleLayout} />;
+  if (layoutMode === 'homescreen') {
+    return <HomescreenLayout onSelectAgent={handleAgentSelect} onToggleLayout={toggleLayout} />
   }
 
   // Command palette layout (default)
@@ -362,8 +346,8 @@ export function ActionMenu({
             ref={inputRef}
             value={filter}
             onChange={(e) => {
-              setFilter(e.target.value);
-              setSelectedIndex(0);
+              setFilter(e.target.value)
+              setSelectedIndex(0)
             }}
             placeholder="Search for actions..."
             className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none"
@@ -413,9 +397,17 @@ export function ActionMenu({
           <button
             onClick={toggleInvisibility}
             className="flex items-center gap-1 hover:text-foreground transition-colors duration-150"
-            title={invisibilityEnabled ? "Hidden from screen recorders (click to show)" : "Visible to screen recorders (click to hide)"}
+            title={
+              invisibilityEnabled
+                ? 'Hidden from screen recorders (click to show)'
+                : 'Visible to screen recorders (click to hide)'
+            }
           >
-            {invisibilityEnabled ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+            {invisibilityEnabled ? (
+              <EyeOff className="h-3.5 w-3.5" />
+            ) : (
+              <Eye className="h-3.5 w-3.5" />
+            )}
           </button>
         </div>
         <div className="flex items-center gap-4">
@@ -430,5 +422,5 @@ export function ActionMenu({
         </div>
       </div>
     </div>
-  );
+  )
 }

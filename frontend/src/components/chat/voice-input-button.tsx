@@ -1,16 +1,16 @@
-"use client";
+'use client'
 
-import { Mic, MicOff, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Mic, MicOff, Loader2 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 interface VoiceInputButtonProps {
-  isRecording: boolean;
-  isTranscribing: boolean;
-  onStartRecording: () => void;
-  onStopRecording: () => void;
-  disabled?: boolean;
-  className?: string;
+  isRecording: boolean
+  isTranscribing: boolean
+  onStartRecording: () => void
+  onStopRecording: () => void
+  disabled?: boolean
+  className?: string
 }
 
 export function VoiceInputButton({
@@ -23,11 +23,11 @@ export function VoiceInputButton({
 }: VoiceInputButtonProps) {
   const handleClick = () => {
     if (isRecording) {
-      onStopRecording();
+      onStopRecording()
     } else {
-      onStartRecording();
+      onStartRecording()
     }
-  };
+  }
 
   if (isTranscribing) {
     return (
@@ -36,11 +36,11 @@ export function VoiceInputButton({
         variant="ghost"
         size="icon"
         disabled
-        className={cn("h-8 w-8", className)}
+        className={cn('h-8 w-8', className)}
       >
         <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
       </Button>
-    );
+    )
   }
 
   return (
@@ -51,8 +51,8 @@ export function VoiceInputButton({
       onClick={handleClick}
       disabled={disabled}
       className={cn(
-        "h-8 w-8 transition-all",
-        isRecording && "bg-red-500/20 text-red-500 hover:bg-red-500/30 hover:text-red-500",
+        'h-8 w-8 transition-all',
+        isRecording && 'bg-red-500/20 text-red-500 hover:bg-red-500/30 hover:text-red-500',
         className
       )}
     >
@@ -65,5 +65,5 @@ export function VoiceInputButton({
         <Mic className="h-4 w-4" />
       )}
     </Button>
-  );
+  )
 }

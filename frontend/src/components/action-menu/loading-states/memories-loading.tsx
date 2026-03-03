@@ -1,20 +1,20 @@
-"use client";
+'use client'
 
-import { motion } from "motion/react";
-import { cn } from "@/lib/utils";
+import { motion } from 'motion/react'
+import { cn } from '@/lib/utils'
 
 interface MemoriesLoadingProps {
-  className?: string;
+  className?: string
 }
 
 export function MemoriesLoading({ className }: MemoriesLoadingProps) {
   return (
-    <div className={cn("flex flex-col items-center justify-center py-12", className)}>
+    <div className={cn('flex flex-col items-center justify-center py-12', className)}>
       <div className="relative flex flex-col items-center">
         <motion.div
           className="relative mb-4"
           animate={{ scale: [1, 1.05, 1] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
         >
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-violet-500/20 to-purple-500/20 backdrop-blur-sm">
             <svg
@@ -40,7 +40,7 @@ export function MemoriesLoading({ className }: MemoriesLoadingProps) {
               className="absolute h-6 w-10 rounded border border-violet-400/30 bg-card/60 backdrop-blur-sm"
               style={{
                 left: `${-20 + i * 25}px`,
-                top: "-8px",
+                top: '-8px',
               }}
               initial={{ opacity: 0, y: 20, rotate: (i - 1) * 10 }}
               animate={{
@@ -90,5 +90,5 @@ export function MemoriesLoading({ className }: MemoriesLoadingProps) {
         <span className="text-xs text-muted-foreground">Looking for your preferences...</span>
       </motion.div>
     </div>
-  );
+  )
 }

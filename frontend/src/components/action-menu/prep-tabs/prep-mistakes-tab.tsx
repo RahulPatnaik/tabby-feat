@@ -1,10 +1,10 @@
-"use client";
+'use client'
 
-import { AlertTriangle } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { AlertTriangle } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 interface PrepMistakesTabProps {
-  mistakes?: Array<{ mistake: string; correction: string; pattern: string }>;
+  mistakes?: Array<{ mistake: string; correction: string; pattern: string }>
 }
 
 export function PrepMistakesTab({ mistakes }: PrepMistakesTabProps) {
@@ -15,7 +15,7 @@ export function PrepMistakesTab({ mistakes }: PrepMistakesTabProps) {
         <p className="text-sm">No past mistakes found for this pattern.</p>
         <p className="mt-1 text-xs">Great job, or this is your first attempt!</p>
       </div>
-    );
+    )
   }
 
   return (
@@ -36,7 +36,9 @@ export function PrepMistakesTab({ mistakes }: PrepMistakesTabProps) {
                   <p className="text-sm text-foreground">{item.mistake}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-green-600 dark:text-green-400">Correction</p>
+                  <p className="text-sm font-medium text-green-600 dark:text-green-400">
+                    Correction
+                  </p>
                   <p className="text-sm text-foreground">{item.correction}</p>
                 </div>
                 <div className="pt-1">
@@ -50,5 +52,5 @@ export function PrepMistakesTab({ mistakes }: PrepMistakesTabProps) {
         ))}
       </div>
     </div>
-  );
+  )
 }

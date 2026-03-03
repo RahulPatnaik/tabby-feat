@@ -1,76 +1,61 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-} from "recharts";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { getApiUrl } from "@/lib/api-url";
+import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts'
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import { getApiUrl } from '@/lib/api-url'
 
 const chartConfig = {
   completions: {
-    label: "Completions",
-    color: "var(--foreground)",
+    label: 'Completions',
+    color: 'var(--foreground)',
   },
-};
+}
 
-type TimePeriod = "minute" | "hour" | "day";
+type TimePeriod = 'minute' | 'hour' | 'day'
 
 interface AnalyticsData {
-  timeSeries: { time: string; completions: number; latency: number }[];
-  distribution: { name: string; value: number; fill: string }[];
+  timeSeries: { time: string; completions: number; latency: number }[]
+  distribution: { name: string; value: number; fill: string }[]
 }
 
 async function fetchAnalytics(period: TimePeriod): Promise<AnalyticsData> {
   const res = await fetch(getApiUrl(`/api/dashboard/analytics?period=${period}`), {
-    credentials: "include",
-  });
-  const data = await res.json();
-  if (!data.success) throw new Error("Failed to fetch analytics");
-  return data.data;
+    credentials: 'include',
+  })
+  const data = await res.json()
+  if (!data.success) throw new Error('Failed to fetch analytics')
+  return data.data
 }
 
 export function CompletionsChart() {
-  const [period, setPeriod] = useState<TimePeriod>("hour");
+  const [period, setPeriod] = useState<TimePeriod>('hour')
 
   const { data, isLoading } = useQuery({
-    queryKey: ["analytics", period],
+    queryKey: ['analytics', period],
     queryFn: () => fetchAnalytics(period),
     refetchInterval: 30000, // Refresh every 30 seconds
-  });
+  })
 
-  const timeSeries = data?.timeSeries || [];
+  const timeSeries = data?.timeSeries || []
 
   return (
     <div className="rounded-xl border border-border bg-card p-5">
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="font-semibold text-lg">Tab Completions</h3>
-          <p className="text-sm text-muted-foreground">
-            Completions over time
-          </p>
+          <p className="text-sm text-muted-foreground">Completions over time</p>
         </div>
         <div className="flex gap-1 rounded-lg bg-muted p-1">
-          {(["minute", "hour", "day"] as TimePeriod[]).map((p) => (
+          {(['minute', 'hour', 'day'] as TimePeriod[]).map((p) => (
             <Button
               key={p}
               variant="ghost"
               size="sm"
-              className={cn(
-                "h-7 text-xs capitalize",
-                period === p && "bg-background shadow-sm"
-              )}
+              className={cn('h-7 text-xs capitalize', period === p && 'bg-background shadow-sm')}
               onClick={() => setPeriod(p)}
             >
               {p}
@@ -120,5 +105,5 @@ export function CompletionsChart() {
         </ChartContainer>
       )}
     </div>
-  );
+  )
 }

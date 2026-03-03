@@ -1,75 +1,75 @@
-"use client";
+'use client'
 
-import { useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { RefreshCw } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Button } from "@/components/ui/button";
-import useUser from "@/hooks/use-user";
+import { useMemo } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { RefreshCw } from 'lucide-react'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Button } from '@/components/ui/button'
+import useUser from '@/hooks/use-user'
 
 interface Memory {
-  id: string;
-  memory: string;
-  hash: string;
-  metadata: Record<string, unknown> | null;
-  created_at: string;
-  updated_at: string | null;
-  user_id: string;
+  id: string
+  memory: string
+  hash: string
+  metadata: Record<string, unknown> | null
+  created_at: string
+  updated_at: string | null
+  user_id: string
 }
 
-const MEMORY_API_URL = process.env.NEXT_PUBLIC_MEMORY_API_URL || "http://localhost:8000";
+const MEMORY_API_URL = process.env.NEXT_PUBLIC_MEMORY_API_URL || 'http://localhost:8000'
 
 async function fetchAllMemories(userId: string): Promise<Memory[]> {
   const response = await fetch(`${MEMORY_API_URL}/memory/get_all`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ user_id: userId }),
-  });
-  const data = await response.json();
-  if (!data.success) throw new Error("Failed to fetch memories");
-  return data.memories?.results || [];
+  })
+  const data = await response.json()
+  if (!data.success) throw new Error('Failed to fetch memories')
+  return data.memories?.results || []
 }
 
 const MEMORY_TYPES: Record<string, string> = {
-  LONG_TERM: "Core Facts",
-  SHORT_TERM: "Current",
-  EPISODIC: "Events",
-  SEMANTIC: "Knowledge",
-  PROCEDURAL: "Workflows",
-  UNCATEGORIZED: "Other",
-};
+  LONG_TERM: 'Core Facts',
+  SHORT_TERM: 'Current',
+  EPISODIC: 'Events',
+  SEMANTIC: 'Knowledge',
+  PROCEDURAL: 'Workflows',
+  UNCATEGORIZED: 'Other',
+}
 
 export function UserMemoriesPanel() {
-  const { data: user } = useUser();
-  const userId = user?.id;
+  const { data: user } = useUser()
+  const userId = user?.id
 
   const {
     data: memories = [],
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ["dashboard-memories", userId],
+    queryKey: ['dashboard-memories', userId],
     queryFn: () => fetchAllMemories(userId!),
     enabled: !!userId,
-  });
+  })
 
   const groupedMemories = useMemo(() => {
-    const groups: Record<string, Memory[]> = {};
+    const groups: Record<string, Memory[]> = {}
     Object.keys(MEMORY_TYPES).forEach((type) => {
-      groups[type] = [];
-    });
+      groups[type] = []
+    })
 
     memories.forEach((memory) => {
-      const type = (memory.metadata?.memory_type as string) || "UNCATEGORIZED";
+      const type = (memory.metadata?.memory_type as string) || 'UNCATEGORIZED'
       if (groups[type]) {
-        groups[type].push(memory);
+        groups[type].push(memory)
       } else {
-        groups["UNCATEGORIZED"].push(memory);
+        groups['UNCATEGORIZED'].push(memory)
       }
-    });
+    })
 
-    return groups;
-  }, [memories]);
+    return groups
+  }, [memories])
 
   const memoryCounts = useMemo(() => {
     return Object.entries(groupedMemories)
@@ -78,8 +78,8 @@ export function UserMemoriesPanel() {
         type,
         label: MEMORY_TYPES[type],
         count: mems.length,
-      }));
-  }, [groupedMemories]);
+      }))
+  }, [groupedMemories])
 
   return (
     <div className="rounded-xl border border-border bg-card p-6">
@@ -87,9 +87,7 @@ export function UserMemoriesPanel() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h3 className="font-semibold text-lg">Memories</h3>
-          <p className="text-sm text-muted-foreground">
-            {memories.length} stored
-          </p>
+          <p className="text-sm text-muted-foreground">{memories.length} stored</p>
         </div>
         <Button
           variant="ghost"
@@ -98,9 +96,7 @@ export function UserMemoriesPanel() {
           onClick={() => refetch()}
           disabled={isLoading}
         >
-          <RefreshCw
-            className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
-          />
+          <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
         </Button>
       </div>
 
@@ -124,9 +120,7 @@ export function UserMemoriesPanel() {
                 className="flex items-center justify-between rounded-lg bg-muted/50 px-3 py-2.5"
               >
                 <span className="text-sm">{label}</span>
-                <span className="text-sm font-medium text-muted-foreground">
-                  {count}
-                </span>
+                <span className="text-sm font-medium text-muted-foreground">{count}</span>
               </div>
             ))}
           </div>
@@ -150,5 +144,5 @@ export function UserMemoriesPanel() {
         </div>
       )}
     </div>
-  );
+  )
 }

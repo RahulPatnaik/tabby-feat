@@ -1,23 +1,23 @@
-"use client";
+'use client'
 
-import { motion } from "motion/react";
-import { cn } from "@/lib/utils";
+import { motion } from 'motion/react'
+import { cn } from '@/lib/utils'
 
 interface CodeLoadingProps {
-  className?: string;
+  className?: string
 }
 
 export function CodeLoading({ className }: CodeLoadingProps) {
   const codeLines = [
-    { width: "70%", delay: 0 },
-    { width: "85%", delay: 0.1 },
-    { width: "60%", delay: 0.2 },
-    { width: "90%", delay: 0.3 },
-    { width: "45%", delay: 0.4 },
-  ];
+    { width: '70%', delay: 0 },
+    { width: '85%', delay: 0.1 },
+    { width: '60%', delay: 0.2 },
+    { width: '90%', delay: 0.3 },
+    { width: '45%', delay: 0.4 },
+  ]
 
   return (
-    <div className={cn("flex flex-col items-center justify-center py-12", className)}>
+    <div className={cn('flex flex-col items-center justify-center py-12', className)}>
       <div className="relative h-32 w-48 overflow-hidden rounded-lg border border-border/50 bg-muted/30 backdrop-blur-sm">
         <div className="flex items-center gap-1.5 border-b border-border/30 bg-muted/50 px-3 py-2">
           <div className="h-2 w-2 rounded-full bg-red-400/70" />
@@ -49,13 +49,13 @@ export function CodeLoading({ className }: CodeLoadingProps) {
         <motion.div
           className="absolute bottom-3 h-3 w-0.5 bg-primary"
           animate={{ x: [8, 180, 8], opacity: [1, 1, 0, 1] }}
-          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
         />
 
         <motion.div
           className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent"
-          animate={{ x: ["-100%", "100%"] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          animate={{ x: ['-100%', '100%'] }}
+          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
         />
       </div>
 
@@ -72,14 +72,19 @@ export function CodeLoading({ className }: CodeLoadingProps) {
             viewBox="0 0 24 24"
             fill="none"
             animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
           >
             <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" opacity="0.2" />
-            <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            <path
+              d="M12 2a10 10 0 0 1 10 10"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
           </motion.svg>
           <span className="font-mono">Generating solution...</span>
         </div>
       </motion.div>
     </div>
-  );
+  )
 }

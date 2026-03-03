@@ -1,11 +1,11 @@
-"use client";
+'use client'
 
-import { MessageSquare, Brain } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { PrepAnalysis } from "@/lib/ai/types";
+import { MessageSquare, Brain } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { PrepAnalysis } from '@/lib/ai/types'
 
 interface PrepMemoriesTabProps {
-  memories: Array<{ memory?: string; createdAt?: string }>;
+  memories: Array<{ memory?: string; createdAt?: string }>
 }
 
 export function PrepMemoriesTab({ memories }: PrepMemoriesTabProps) {
@@ -15,7 +15,7 @@ export function PrepMemoriesTab({ memories }: PrepMemoriesTabProps) {
         <Brain className="mb-4 h-10 w-10 opacity-40" />
         <p className="text-sm">No memories found.</p>
       </div>
-    );
+    )
   }
 
   return (
@@ -36,5 +36,5 @@ export function PrepMemoriesTab({ memories }: PrepMemoriesTabProps) {
         ))}
       </div>
     </div>
-  );
+  )
 }

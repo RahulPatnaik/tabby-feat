@@ -1,94 +1,94 @@
-"use client";
+'use client'
 
-import * as React from "react";
-import { Plus, Command, Trash2, AlertCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Action } from "@/lib/ai/types";
-import { loadActions, saveActions, resetToDefaults, isShortcutTaken } from "@/lib/ai/actions-store";
-import { cn } from "@/lib/utils";
-import { nanoid } from "nanoid";
-import { Kbd } from "@/components/ui/kbd";
+import * as React from 'react'
+import { Plus, Command, Trash2, AlertCircle } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Action } from '@/lib/ai/types'
+import { loadActions, saveActions, resetToDefaults, isShortcutTaken } from '@/lib/ai/actions-store'
+import { cn } from '@/lib/utils'
+import { nanoid } from 'nanoid'
+import { Kbd } from '@/components/ui/kbd'
 
 export function ActionsTab() {
-  const [actions, setActions] = React.useState<Action[]>([]);
-  const [selectedActionId, setSelectedActionId] = React.useState<string | null>(null);
-  const [isCreating, setIsCreating] = React.useState(false);
+  const [actions, setActions] = React.useState<Action[]>([])
+  const [selectedActionId, setSelectedActionId] = React.useState<string | null>(null)
+  const [isCreating, setIsCreating] = React.useState(false)
 
-  const [label, setLabel] = React.useState("");
-  const [icon, setIcon] = React.useState("⚡");
-  const [prompt, setPrompt] = React.useState("");
-  const [shortcut, setShortcut] = React.useState("");
-  const [shortcutError, setShortcutError] = React.useState("");
+  const [label, setLabel] = React.useState('')
+  const [icon, setIcon] = React.useState('⚡')
+  const [prompt, setPrompt] = React.useState('')
+  const [shortcut, setShortcut] = React.useState('')
+  const [shortcutError, setShortcutError] = React.useState('')
 
   React.useEffect(() => {
-    setActions(loadActions());
-  }, []);
+    setActions(loadActions())
+  }, [])
 
   const handleSaveActions = (newActions: Action[]) => {
-    setActions(newActions);
-    saveActions(newActions);
-  };
+    setActions(newActions)
+    saveActions(newActions)
+  }
 
   const handleSelectAction = (id: string) => {
-    const action = actions.find((a) => a.id === id);
+    const action = actions.find((a) => a.id === id)
     if (action) {
-      setSelectedActionId(id);
-      setIsCreating(false);
-      setLabel(action.label);
-      setIcon(action.icon);
-      setPrompt(action.prompt || "");
-      setShortcut(action.shortcut || "");
-      setShortcutError("");
+      setSelectedActionId(id)
+      setIsCreating(false)
+      setLabel(action.label)
+      setIcon(action.icon)
+      setPrompt(action.prompt || '')
+      setShortcut(action.shortcut || '')
+      setShortcutError('')
     }
-  };
+  }
 
   const handleCreateNew = () => {
-    setSelectedActionId(null);
-    setIsCreating(true);
-    setLabel("");
-    setIcon("⚡");
-    setPrompt("");
-    setShortcut("");
-    setShortcutError("");
-  };
+    setSelectedActionId(null)
+    setIsCreating(true)
+    setLabel('')
+    setIcon('⚡')
+    setPrompt('')
+    setShortcut('')
+    setShortcutError('')
+  }
 
   const validateShortcut = (value: string, currentId?: string): boolean => {
-    if (!value) return true;
-    
+    if (!value) return true
+
     if (value.length !== 1 || !/^[a-zA-Z0-9]$/.test(value)) {
-      setShortcutError("Shortcut must be a single letter or number");
-      return false;
+      setShortcutError('Shortcut must be a single letter or number')
+      return false
     }
-    
+
     if (isShortcutTaken(actions, value, currentId)) {
-      setShortcutError("This shortcut is already in use");
-      return false;
+      setShortcutError('This shortcut is already in use')
+      return false
     }
-    
-    setShortcutError("");
-    return true;
-  };
+
+    setShortcutError('')
+    return true
+  }
 
   const handleShortcutChange = (value: string) => {
-    const upper = value.toUpperCase().slice(-1);
-    setShortcut(upper);
-    validateShortcut(upper, selectedActionId ?? undefined);
-  };
+    const upper = value.toUpperCase().slice(-1)
+    setShortcut(upper)
+    validateShortcut(upper, selectedActionId ?? undefined)
+  }
 
   const handleSave = () => {
-    if (!label.trim()) return;
-    
+    if (!label.trim()) return
+
     if (shortcut && !validateShortcut(shortcut, selectedActionId ?? undefined)) {
-      return;
+      return
     }
 
     if (isCreating) {
-      if (!prompt.trim()) return;
-      
+      if (!prompt.trim()) return
+
       const newAction: Action = {
         id: nanoid(),
         label,
@@ -96,50 +96,48 @@ export function ActionsTab() {
         prompt,
         shortcut: shortcut || undefined,
         isDefault: false,
-      };
-      handleSaveActions([...actions, newAction]);
-      setSelectedActionId(newAction.id);
-      setIsCreating(false);
+      }
+      handleSaveActions([...actions, newAction])
+      setSelectedActionId(newAction.id)
+      setIsCreating(false)
     } else if (selectedActionId) {
       const updatedActions = actions.map((a) =>
-        a.id === selectedActionId 
-          ? { ...a, label, icon, prompt: prompt || a.prompt, shortcut: shortcut || undefined } 
+        a.id === selectedActionId
+          ? { ...a, label, icon, prompt: prompt || a.prompt, shortcut: shortcut || undefined }
           : a
-      );
-      handleSaveActions(updatedActions);
+      )
+      handleSaveActions(updatedActions)
     }
-  };
+  }
 
   const handleDelete = () => {
     if (selectedActionId) {
-      const action = actions.find(a => a.id === selectedActionId);
-      if (action?.isDefault) return;
-      
-      const newActions = actions.filter((a) => a.id !== selectedActionId);
-      handleSaveActions(newActions);
-      setSelectedActionId(null);
-      setLabel("");
-      setIcon("⚡");
-      setPrompt("");
-      setShortcut("");
+      const action = actions.find((a) => a.id === selectedActionId)
+      if (action?.isDefault) return
+
+      const newActions = actions.filter((a) => a.id !== selectedActionId)
+      handleSaveActions(newActions)
+      setSelectedActionId(null)
+      setLabel('')
+      setIcon('⚡')
+      setPrompt('')
+      setShortcut('')
     }
-  };
+  }
 
   const handleReset = () => {
-    const defaults = resetToDefaults();
-    setActions(defaults);
-    setSelectedActionId(null);
-    setLabel("");
-    setIcon("⚡");
-    setPrompt("");
-    setShortcut("");
-  };
+    const defaults = resetToDefaults()
+    setActions(defaults)
+    setSelectedActionId(null)
+    setLabel('')
+    setIcon('⚡')
+    setPrompt('')
+    setShortcut('')
+  }
 
-  const selectedAction = selectedActionId 
-    ? actions.find(a => a.id === selectedActionId) 
-    : null;
-  const isDefaultAction = selectedAction?.isDefault ?? false;
-  const isSpecialAction = selectedActionId === "chat" || selectedActionId === "custom";
+  const selectedAction = selectedActionId ? actions.find((a) => a.id === selectedActionId) : null
+  const isDefaultAction = selectedAction?.isDefault ?? false
+  const isSpecialAction = selectedActionId === 'chat' || selectedActionId === 'custom'
 
   return (
     <div className="flex h-full">
@@ -151,10 +149,10 @@ export function ActionsTab() {
                 key={action.id}
                 onClick={() => handleSelectAction(action.id as string)}
                 className={cn(
-                  "w-full flex items-center justify-between gap-2 px-3 py-2 text-sm rounded-md transition-colors text-left",
+                  'w-full flex items-center justify-between gap-2 px-3 py-2 text-sm rounded-md transition-colors text-left',
                   selectedActionId === action.id
-                    ? "bg-white dark:bg-zinc-800 shadow-sm text-foreground font-medium"
-                    : "hover:bg-zinc-100 dark:hover:bg-zinc-800/50 text-muted-foreground hover:text-foreground"
+                    ? 'bg-white dark:bg-zinc-800 shadow-sm text-foreground font-medium'
+                    : 'hover:bg-zinc-100 dark:hover:bg-zinc-800/50 text-muted-foreground hover:text-foreground'
                 )}
               >
                 <div className="flex items-center gap-3 min-w-0">
@@ -194,12 +192,12 @@ export function ActionsTab() {
           <div className="max-w-md w-full mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-200">
             <div className="space-y-1">
               <h2 className="text-2xl font-semibold tracking-tight">
-                {isCreating ? "Create New Action" : "Edit Action"}
+                {isCreating ? 'Create New Action' : 'Edit Action'}
               </h2>
               <p className="text-sm text-muted-foreground">
-                {isDefaultAction 
-                  ? "Configure the shortcut and prompt for this default action."
-                  : "Configure how this action transforms your text."}
+                {isDefaultAction
+                  ? 'Configure the shortcut and prompt for this default action.'
+                  : 'Configure how this action transforms your text.'}
               </p>
             </div>
 
@@ -227,7 +225,7 @@ export function ActionsTab() {
                   />
                 </div>
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="shortcut">Keyboard Shortcut</Label>
                 <div className="flex items-center gap-2">
@@ -271,7 +269,7 @@ export function ActionsTab() {
 
             <div className="flex items-center gap-3 pt-4">
               <Button onClick={handleSave} className="flex-1">
-                {isCreating ? "Create Action" : "Save Changes"}
+                {isCreating ? 'Create Action' : 'Save Changes'}
               </Button>
               {!isCreating && !isDefaultAction && (
                 <Button
@@ -302,5 +300,5 @@ export function ActionsTab() {
         )}
       </div>
     </div>
-  );
+  )
 }

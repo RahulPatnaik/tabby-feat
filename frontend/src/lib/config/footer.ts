@@ -19,24 +19,24 @@ export interface FooterConfig {
 
 export const footerConfig: FooterConfig = {
   brand: {
-    title: "Vercel AI SDK",
-    description: "A template for building AI-powered applications."
+    title: 'Vercel AI SDK',
+    description: 'A template for building AI-powered applications.',
   },
   sections: [
     {
-      title: "Platform",
+      title: 'Platform',
       links: [
-        { href: "/chat", label: "Chat" },
-        { href: "/dashboard", label: "Voice Assistant" },
-      ]
+        { href: '/chat', label: 'Chat' },
+        { href: '/dashboard', label: 'Voice Assistant' },
+      ],
     },
     {
-      title: "Legal",
+      title: 'Legal',
       links: [
-        { href: "#", label: "Privacy Policy" },
-        { href: "#", label: "Terms of Service" },
-      ]
-    }
+        { href: '#', label: 'Privacy Policy' },
+        { href: '#', label: 'Terms of Service' },
+      ],
+    },
   ],
-  copyright: `© ${new Date().getFullYear()} AI SDK Template. All rights reserved.`
+  copyright: `© ${new Date().getFullYear()} AI SDK Template. All rights reserved.`,
 }

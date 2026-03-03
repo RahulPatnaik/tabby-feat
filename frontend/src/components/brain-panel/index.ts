@@ -1,3 +1,3 @@
-export { BrainPanel } from "./brain-panel"
-export { CollapsedBrain } from "./collapsed-brain"
-export { ExpandedPanel } from "./expanded-panel"
+export { BrainPanel } from './brain-panel'
+export { CollapsedBrain } from './collapsed-brain'
+export { ExpandedPanel } from './expanded-panel'

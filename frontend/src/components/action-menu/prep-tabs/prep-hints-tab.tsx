@@ -1,28 +1,28 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { Lightbulb, ChevronDown, ChevronRight, Eye, EyeOff } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { MessageResponse, Message, MessageContent } from "@/components/ai-elements/message";
-import { Conversation, ConversationContent } from "@/components/ai-elements/conversation";
+import { useState } from 'react'
+import { Lightbulb, ChevronDown, ChevronRight, Eye, EyeOff } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import { MessageResponse, Message, MessageContent } from '@/components/ai-elements/message'
+import { Conversation, ConversationContent } from '@/components/ai-elements/conversation'
 
 interface PrepHintsTabProps {
-  hints?: Array<{ level: number; content: string }>;
-  maxVisibleLevel?: number;
+  hints?: Array<{ level: number; content: string }>
+  maxVisibleLevel?: number
 }
 
 const HINT_LABELS = [
-  "Gentle Nudge",
-  "Pattern Hint",
-  "Approach Hint",
-  "Algorithm Steps",
-  "Near Solution",
-];
+  'Gentle Nudge',
+  'Pattern Hint',
+  'Approach Hint',
+  'Algorithm Steps',
+  'Near Solution',
+]
 
 export function PrepHintsTab({ hints, maxVisibleLevel = 1 }: PrepHintsTabProps) {
-  const [visibleLevel, setVisibleLevel] = useState(maxVisibleLevel);
-  const [expandedHints, setExpandedHints] = useState<Set<number>>(new Set([1]));
+  const [visibleLevel, setVisibleLevel] = useState(maxVisibleLevel)
+  const [expandedHints, setExpandedHints] = useState<Set<number>>(new Set([1]))
 
   if (!hints || hints.length === 0) {
     return (
@@ -30,52 +30,52 @@ export function PrepHintsTab({ hints, maxVisibleLevel = 1 }: PrepHintsTabProps) 
         <Lightbulb className="mb-4 h-10 w-10 opacity-40" />
         <p className="text-sm">No hints available yet.</p>
       </div>
-    );
+    )
   }
 
-  const sortedHints = [...hints].sort((a, b) => a.level - b.level);
+  const sortedHints = [...hints].sort((a, b) => a.level - b.level)
 
   const toggleHint = (level: number) => {
-    const newExpanded = new Set(expandedHints);
+    const newExpanded = new Set(expandedHints)
     if (newExpanded.has(level)) {
-      newExpanded.delete(level);
+      newExpanded.delete(level)
     } else {
-      newExpanded.add(level);
+      newExpanded.add(level)
     }
-    setExpandedHints(newExpanded);
-  };
+    setExpandedHints(newExpanded)
+  }
 
   const revealNextHint = () => {
     if (visibleLevel < 5) {
-      const nextLevel = visibleLevel + 1;
-      setVisibleLevel(nextLevel);
-      setExpandedHints(new Set([...expandedHints, nextLevel]));
+      const nextLevel = visibleLevel + 1
+      setVisibleLevel(nextLevel)
+      setExpandedHints(new Set([...expandedHints, nextLevel]))
     }
-  };
+  }
 
   return (
     <div className="flex-1 overflow-auto p-4">
       <div className="space-y-2">
         {sortedHints.map((hint) => {
-          const isVisible = hint.level <= visibleLevel;
-          const isExpanded = expandedHints.has(hint.level);
+          const isVisible = hint.level <= visibleLevel
+          const isExpanded = expandedHints.has(hint.level)
 
           return (
             <div
               key={hint.level}
               className={cn(
-                "rounded-lg border transition-all",
+                'rounded-lg border transition-all',
                 isVisible
-                  ? "border-border/50 bg-card/50"
-                  : "border-dashed border-muted-foreground/30 bg-muted/20"
+                  ? 'border-border/50 bg-card/50'
+                  : 'border-dashed border-muted-foreground/30 bg-muted/20'
               )}
             >
               <button
                 onClick={() => isVisible && toggleHint(hint.level)}
                 disabled={!isVisible}
                 className={cn(
-                  "flex w-full items-center justify-between p-3 text-left",
-                  !isVisible && "cursor-not-allowed opacity-50"
+                  'flex w-full items-center justify-between p-3 text-left',
+                  !isVisible && 'cursor-not-allowed opacity-50'
                 )}
               >
                 <div className="flex items-center gap-2">
@@ -110,7 +110,7 @@ export function PrepHintsTab({ hints, maxVisibleLevel = 1 }: PrepHintsTabProps) 
                 </div>
               )}
             </div>
-          );
+          )
         })}
       </div>
 
@@ -123,5 +123,5 @@ export function PrepHintsTab({ hints, maxVisibleLevel = 1 }: PrepHintsTabProps) 
         </div>
       )}
     </div>
-  );
+  )
 }

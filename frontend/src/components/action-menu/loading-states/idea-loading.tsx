@@ -1,20 +1,20 @@
-"use client";
+'use client'
 
-import { motion } from "motion/react";
-import { cn } from "@/lib/utils";
+import { motion } from 'motion/react'
+import { cn } from '@/lib/utils'
 
 interface IdeaLoadingProps {
-  className?: string;
+  className?: string
 }
 
 export function IdeaLoading({ className }: IdeaLoadingProps) {
   return (
-    <div className={cn("flex flex-col items-center justify-center py-12", className)}>
+    <div className={cn('flex flex-col items-center justify-center py-12', className)}>
       <div className="relative h-24 w-24">
         <motion.div
           className="absolute inset-0 flex items-center justify-center"
           animate={{ scale: [1, 1.05, 1] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
         >
           <svg
             className="h-12 w-12 text-primary"
@@ -34,7 +34,7 @@ export function IdeaLoading({ className }: IdeaLoadingProps) {
             <motion.path
               d="M12 6v6l4 2"
               animate={{ pathLength: [0, 1, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
             />
           </svg>
         </motion.div>
@@ -47,7 +47,7 @@ export function IdeaLoading({ className }: IdeaLoadingProps) {
             transition={{
               duration: 3,
               repeat: Infinity,
-              ease: "linear",
+              ease: 'linear',
               delay: i * 0.75,
             }}
           >
@@ -57,7 +57,7 @@ export function IdeaLoading({ className }: IdeaLoadingProps) {
               transition={{
                 duration: 1.5,
                 repeat: Infinity,
-                ease: "easeInOut",
+                ease: 'easeInOut',
                 delay: i * 0.375,
               }}
             >
@@ -81,7 +81,7 @@ export function IdeaLoading({ className }: IdeaLoadingProps) {
               transition={{
                 duration: 2,
                 repeat: Infinity,
-                ease: "easeInOut",
+                ease: 'easeInOut',
                 delay: i * 0.3,
               }}
             />
@@ -105,7 +105,7 @@ export function IdeaLoading({ className }: IdeaLoadingProps) {
               transition={{
                 duration: 0.6,
                 repeat: Infinity,
-                ease: "easeInOut",
+                ease: 'easeInOut',
                 delay: i * 0.15,
               }}
             />
@@ -113,5 +113,5 @@ export function IdeaLoading({ className }: IdeaLoadingProps) {
         </div>
       </motion.div>
     </div>
-  );
+  )
 }

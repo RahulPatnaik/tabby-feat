@@ -1,9 +1,9 @@
-"use client";
+'use client'
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MemoryTab } from "@/components/settings/memory-tab";
-import { GraphTab } from "@/components/settings/graph-tab";
-import { Brain, Network } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { MemoryTab } from '@/components/settings/memory-tab'
+import { GraphTab } from '@/components/settings/graph-tab'
+import { Brain, Network } from 'lucide-react'
 
 export default function PreferencesPage() {
   return (
@@ -48,5 +48,5 @@ export default function PreferencesPage() {
         </Tabs>
       </div>
     </div>
-  );
+  )
 }

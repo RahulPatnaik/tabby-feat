@@ -58,10 +58,10 @@ export async function updateSession(request: NextRequest) {
   const user = await supabase.auth.getUser()
   const url = new URL(request.url)
   const next = url.searchParams.get('next')
-  
+
   // Check onboarding status from cookie
   const onboardingComplete = request.cookies.get('onboarding_complete')?.value === 'true'
-  
+
   if (user.data.user?.id) {
     // User is logged in
     if (authPaths.includes(url.pathname)) {
@@ -71,17 +71,21 @@ export async function updateSession(request: NextRequest) {
       }
       return NextResponse.redirect(new URL('/', request.url))
     }
-    
+
     // If user is on onboarding page and already completed, redirect to home
     if (url.pathname === onboardingPath && onboardingComplete) {
       return NextResponse.redirect(new URL('/', request.url))
     }
-    
+
     // If user is accessing protected paths (except onboarding) and hasn't completed onboarding
-    if (!onboardingComplete && protectedPaths.includes(url.pathname) && url.pathname !== onboardingPath) {
+    if (
+      !onboardingComplete &&
+      protectedPaths.includes(url.pathname) &&
+      url.pathname !== onboardingPath
+    ) {
       return NextResponse.redirect(new URL(onboardingPath, request.url))
     }
-    
+
     return response
   } else {
     // User is not logged in

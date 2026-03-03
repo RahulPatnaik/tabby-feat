@@ -32,4 +32,3 @@ export async function uploadChatAttachments(
 ): Promise<FileUIPart[]> {
   return Promise.all(files.map((file) => uploadChatAttachment(projectId, file)))
 }
-
