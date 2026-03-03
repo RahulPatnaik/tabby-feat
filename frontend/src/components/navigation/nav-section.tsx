@@ -1,10 +1,10 @@
-"use client"
+'use client'
 
-import { ChevronRight, LucideIcon } from "lucide-react"
-import Link from "next/link"
-import { useState } from "react"
-import { usePathname } from "next/navigation"
-import { cn } from "@/lib/utils"
+import { ChevronRight, LucideIcon } from 'lucide-react'
+import Link from 'next/link'
+import { useState } from 'react'
+import { usePathname } from 'next/navigation'
+import { cn } from '@/lib/utils'
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -14,8 +14,8 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-} from "@/components/ui/sidebar"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+} from '@/components/ui/sidebar'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 
 interface MenuItem {
   title: string
@@ -45,14 +45,15 @@ export function NavSection({
   const pathname = usePathname()
 
   // Common button styles
-  const baseButtonClass = "group/menu-button font-medium gap-3 h-9 rounded-md text-sm"
+  const baseButtonClass = 'group/menu-button font-medium gap-3 h-9 rounded-md text-sm'
   // "Panda" active state: Light background, dark text/icon
-  const activeClasses = "bg-muted text-primary shadow-[0_1px_2px_0_rgb(0_0_0/.05),inset_0_1px_0_0_rgb(255_255_255/.12)]"
-  const hoverClasses = "hover:bg-accent"
+  const activeClasses =
+    'bg-muted text-primary shadow-[0_1px_2px_0_rgb(0_0_0/.05),inset_0_1px_0_0_rgb(255_255_255/.12)]'
+  const hoverClasses = 'hover:bg-accent'
 
-  const baseIconClass = "h-4 w-4 text-muted-foreground group-hover/menu-button:text-foreground"
+  const baseIconClass = 'h-4 w-4 text-muted-foreground group-hover/menu-button:text-foreground'
   // "Panda" active icon state
-  const activeIconClass = "group-data-[active=true]/menu-button:text-primary"
+  const activeIconClass = 'group-data-[active=true]/menu-button:text-primary'
 
   const MenuItems = () => (
     <>
@@ -60,22 +61,13 @@ export function NavSection({
         const isActive = pathname === item.href
         return (
           <SidebarMenuItem key={item.title}>
-            <SidebarMenuButton 
+            <SidebarMenuButton
               asChild
-              className={cn(
-                baseButtonClass,
-                hoverClasses,
-                isActive && activeClasses
-              )}
+              className={cn(baseButtonClass, hoverClasses, isActive && activeClasses)}
               data-active={isActive}
             >
               <Link href={item.href}>
-                <item.icon 
-                  className={cn(
-                    baseIconClass,
-                    isActive && activeIconClass
-                  )}
-                />
+                <item.icon className={cn(baseIconClass, isActive && activeIconClass)} />
                 <span>{item.title}</span>
               </Link>
             </SidebarMenuButton>
@@ -91,22 +83,13 @@ export function NavSection({
         const isActive = pathname === item.href
         return (
           <SidebarMenuSubItem key={item.title}>
-            <SidebarMenuSubButton 
+            <SidebarMenuSubButton
               asChild
-              className={cn(
-                baseButtonClass,
-                hoverClasses,
-                isActive && activeClasses
-              )}
+              className={cn(baseButtonClass, hoverClasses, isActive && activeClasses)}
               data-active={isActive}
             >
               <Link href={item.href}>
-                <item.icon 
-                   className={cn(
-                    baseIconClass,
-                    isActive && activeIconClass
-                  )}
-                />
+                <item.icon className={cn(baseIconClass, isActive && activeIconClass)} />
                 <span>{item.title}</span>
               </Link>
             </SidebarMenuSubButton>
@@ -125,11 +108,11 @@ export function NavSection({
             <CollapsibleTrigger asChild>
               {/* Apply only base styles + standard hover to the trigger */}
               <SidebarMenuButton className={cn(baseButtonClass, hoverClasses)}>
-                {SectionIcon && <SectionIcon className={cn(baseIconClass, "mr-2")} />}
+                {SectionIcon && <SectionIcon className={cn(baseIconClass, 'mr-2')} />}
                 <span>{collapsibleTitle}</span>
-                <ChevronRight 
+                <ChevronRight
                   className={cn(
-                    "ml-auto h-4 w-4 text-muted-foreground transition-transform duration-200",
+                    'ml-auto h-4 w-4 text-muted-foreground transition-transform duration-200',
                     isOpen ? 'rotate-90' : ''
                   )}
                 />
@@ -145,4 +128,4 @@ export function NavSection({
       </SidebarMenu>
     </SidebarGroup>
   )
-} 
+}

@@ -1,15 +1,15 @@
-"use client";
+'use client'
 
-import { motion } from "motion/react";
-import { cn } from "@/lib/utils";
+import { motion } from 'motion/react'
+import { cn } from '@/lib/utils'
 
 interface WalkthroughLoadingProps {
-  className?: string;
+  className?: string
 }
 
 export function WalkthroughLoading({ className }: WalkthroughLoadingProps) {
   return (
-    <div className={cn("flex flex-col items-center justify-center py-12", className)}>
+    <div className={cn('flex flex-col items-center justify-center py-12', className)}>
       <div className="relative flex items-center gap-3">
         {[1, 2, 3, 4].map((step, i) => (
           <div key={step} className="flex items-center">
@@ -17,9 +17,9 @@ export function WalkthroughLoading({ className }: WalkthroughLoadingProps) {
               className="relative flex h-10 w-10 items-center justify-center rounded-full border-2 border-primary/30"
               animate={{
                 boxShadow: [
-                  "0 0 0 0 rgba(var(--primary-rgb), 0.4)",
-                  "0 0 0 8px rgba(var(--primary-rgb), 0)",
-                  "0 0 0 0 rgba(var(--primary-rgb), 0.4)",
+                  '0 0 0 0 rgba(var(--primary-rgb), 0.4)',
+                  '0 0 0 8px rgba(var(--primary-rgb), 0)',
+                  '0 0 0 0 rgba(var(--primary-rgb), 0.4)',
                 ],
               }}
               transition={{ duration: 2, repeat: Infinity, delay: i * 0.5 }}
@@ -43,11 +43,11 @@ export function WalkthroughLoading({ className }: WalkthroughLoadingProps) {
               <div className="relative mx-1 h-0.5 w-6 overflow-hidden bg-border/30">
                 <motion.div
                   className="absolute h-full w-full bg-gradient-to-r from-primary to-primary/50"
-                  animate={{ x: ["-100%", "0%", "-100%"] }}
+                  animate={{ x: ['-100%', '0%', '-100%'] }}
                   transition={{
                     duration: 2,
                     repeat: Infinity,
-                    ease: "easeInOut",
+                    ease: 'easeInOut',
                     delay: i * 0.5,
                   }}
                 />
@@ -65,14 +65,14 @@ export function WalkthroughLoading({ className }: WalkthroughLoadingProps) {
             style={{
               zIndex: 3 - i,
             }}
-            initial={{ x: "-50%", y: i * 4, rotate: (i - 1) * 3 }}
+            initial={{ x: '-50%', y: i * 4, rotate: (i - 1) * 3 }}
             animate={{
               y: [i * 4, i * 4 - 2, i * 4],
             }}
             transition={{
               duration: 3,
               repeat: Infinity,
-              ease: "easeInOut",
+              ease: 'easeInOut',
               delay: i * 0.2,
             }}
           >
@@ -99,7 +99,13 @@ export function WalkthroughLoading({ className }: WalkthroughLoadingProps) {
       >
         <span className="text-sm font-medium text-foreground">Creating Walkthrough</span>
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg
+            className="h-3.5 w-3.5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
             <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
             <rect x="9" y="3" width="6" height="4" rx="2" />
             <motion.path
@@ -113,5 +119,5 @@ export function WalkthroughLoading({ className }: WalkthroughLoadingProps) {
         </div>
       </motion.div>
     </div>
-  );
+  )
 }

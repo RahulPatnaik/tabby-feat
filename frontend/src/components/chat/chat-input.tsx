@@ -1,57 +1,53 @@
-"use client";
+'use client'
 
-import { useState, useRef, useCallback, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { ArrowUp, Loader2 } from "lucide-react";
-import type { ChatStatus } from "ai";
+import { useState, useRef, useCallback, useEffect } from 'react'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import { ArrowUp, Loader2 } from 'lucide-react'
+import type { ChatStatus } from 'ai'
 
 interface ChatInputProps {
-  onSubmit: (text: string) => void;
-  status: ChatStatus;
-  placeholder?: string;
+  onSubmit: (text: string) => void
+  status: ChatStatus
+  placeholder?: string
 }
 
-export function ChatInput({
-  onSubmit,
-  status,
-  placeholder = "Type a message...",
-}: ChatInputProps) {
-  const [input, setInput] = useState("");
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+export function ChatInput({ onSubmit, status, placeholder = 'Type a message...' }: ChatInputProps) {
+  const [input, setInput] = useState('')
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  const isStreaming = status === "streaming" || status === "submitted";
+  const isStreaming = status === 'streaming' || status === 'submitted'
 
   const handleSubmit = useCallback(() => {
-    const text = input.trim();
-    if (!text || isStreaming) return;
-    onSubmit(text);
-    setInput("");
-  }, [input, isStreaming, onSubmit]);
+    const text = input.trim()
+    if (!text || isStreaming) return
+    onSubmit(text)
+    setInput('')
+  }, [input, isStreaming, onSubmit])
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        handleSubmit();
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault()
+        handleSubmit()
       }
     },
     [handleSubmit]
-  );
+  )
 
   // Auto-resize textarea
   useEffect(() => {
-    const textarea = textareaRef.current;
+    const textarea = textareaRef.current
     if (textarea) {
-      textarea.style.height = "auto";
-      textarea.style.height = `${Math.min(textarea.scrollHeight, 120)}px`;
+      textarea.style.height = 'auto'
+      textarea.style.height = `${Math.min(textarea.scrollHeight, 120)}px`
     }
-  }, [input]);
+  }, [input])
 
   // Focus on mount
   useEffect(() => {
-    textareaRef.current?.focus();
-  }, []);
+    textareaRef.current?.focus()
+  }, [])
 
   return (
     <div className="flex items-end gap-2 border-t bg-background p-3">
@@ -63,11 +59,11 @@ export function ChatInput({
         placeholder={placeholder}
         disabled={isStreaming}
         className={cn(
-          "flex-1 resize-none rounded-lg border bg-muted/50 px-3 py-2 text-sm",
-          "focus:outline-none focus:ring-2 focus:ring-primary/50",
-          "placeholder:text-muted-foreground",
-          "min-h-[40px] max-h-[120px]",
-          isStreaming && "opacity-50"
+          'flex-1 resize-none rounded-lg border bg-muted/50 px-3 py-2 text-sm',
+          'focus:outline-none focus:ring-2 focus:ring-primary/50',
+          'placeholder:text-muted-foreground',
+          'min-h-[40px] max-h-[120px]',
+          isStreaming && 'opacity-50'
         )}
         rows={1}
       />
@@ -85,5 +81,5 @@ export function ChatInput({
         )}
       </Button>
     </div>
-  );
+  )
 }

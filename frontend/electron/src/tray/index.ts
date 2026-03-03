@@ -1,32 +1,32 @@
-import { Menu, nativeImage, Tray } from "electron";
-import { join } from "path";
-import { AppState } from "../app-state";
-import { createBrainPanelWindow } from "../windows/brain-panel-window";
-import { createSettingsWindow } from "../windows/settings-window";
-import { app } from "electron";
+import { Menu, nativeImage, Tray } from 'electron'
+import { join } from 'path'
+import { AppState } from '../app-state'
+import { createBrainPanelWindow } from '../windows/brain-panel-window'
+import { createSettingsWindow } from '../windows/settings-window'
+import { app } from 'electron'
 
 export const createTray = (): Tray => {
-  const iconPath = join(__dirname, "..", "public", "icons/icon.ico");
-  const trayIcon = nativeImage.createFromPath(iconPath);
+  const iconPath = join(__dirname, '..', 'public', 'icons/icon.ico')
+  const trayIcon = nativeImage.createFromPath(iconPath)
 
-  AppState.tray = new Tray(trayIcon);
-  AppState.tray.setToolTip('Tabby');
+  AppState.tray = new Tray(trayIcon)
+  AppState.tray.setToolTip('Tabby')
 
-  updateTrayMenu();
+  updateTrayMenu()
 
   AppState.tray.on('click', () => {
     if (AppState.mainWindow) {
       if (AppState.mainWindow.isVisible()) {
-        AppState.mainWindow.hide();
+        AppState.mainWindow.hide()
       } else {
-        AppState.mainWindow.show();
-        AppState.mainWindow.focus();
+        AppState.mainWindow.show()
+        AppState.mainWindow.focus()
       }
     }
-  });
+  })
 
-  return AppState.tray;
-};
+  return AppState.tray
+}
 
 export const updateTrayMenu = (): void => {
   const contextMenu = Menu.buildFromTemplate([
@@ -34,8 +34,8 @@ export const updateTrayMenu = (): void => {
       label: 'Show Actions Menu',
       click: () => {
         if (AppState.mainWindow) {
-          AppState.mainWindow.show();
-          AppState.mainWindow.focus();
+          AppState.mainWindow.show()
+          AppState.mainWindow.focus()
         }
       },
     },
@@ -43,12 +43,12 @@ export const updateTrayMenu = (): void => {
       label: 'Brain Panel',
       click: () => {
         if (!AppState.brainPanelWindow || AppState.brainPanelWindow.isDestroyed()) {
-          const window = createBrainPanelWindow();
-          window.show();
+          const window = createBrainPanelWindow()
+          window.show()
         } else if (AppState.brainPanelWindow.isVisible()) {
-          AppState.brainPanelWindow.focus();
+          AppState.brainPanelWindow.focus()
         } else {
-          AppState.brainPanelWindow.show();
+          AppState.brainPanelWindow.show()
         }
       },
     },
@@ -56,21 +56,21 @@ export const updateTrayMenu = (): void => {
     {
       label: 'Settings',
       click: () => {
-        createSettingsWindow();
+        createSettingsWindow()
       },
     },
     { type: 'separator' },
     {
       label: 'Quit',
       click: () => {
-        app.quit();
+        app.quit()
       },
     },
-  ]);
-  AppState.tray?.setContextMenu(contextMenu);
-};
+  ])
+  AppState.tray?.setContextMenu(contextMenu)
+}
 
 export const destroyTray = (): void => {
-  AppState.tray?.destroy();
-  AppState.tray = null;
-};
+  AppState.tray?.destroy()
+  AppState.tray = null
+}

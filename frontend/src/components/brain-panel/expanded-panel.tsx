@@ -1,11 +1,11 @@
-"use client"
+'use client'
 
-import { motion, AnimatePresence } from "motion/react"
-import { Brain, ChevronUp, Eye, EyeOff, Settings, Sparkles } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Switch } from "@/components/ui/switch"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { cn } from "@/lib/utils"
+import { motion, AnimatePresence } from 'motion/react'
+import { Brain, ChevronUp, Eye, EyeOff, Settings, Sparkles } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Switch } from '@/components/ui/switch'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { cn } from '@/lib/utils'
 
 interface Memory {
   id: string
@@ -35,29 +35,29 @@ export function ExpandedPanel({
       initial={{ scale: 0.8, opacity: 0, y: -20 }}
       animate={{ scale: 1, opacity: 1, y: 0 }}
       exit={{ scale: 0.8, opacity: 0, y: -20 }}
-      transition={{ type: "spring", damping: 25, stiffness: 300 }}
+      transition={{ type: 'spring', damping: 25, stiffness: 300 }}
       className={cn(
-        "w-[300px] rounded-2xl overflow-hidden",
-        "bg-background/80 backdrop-blur-xl",
-        "border border-border/50",
-        "shadow-2xl shadow-black/20"
+        'w-[300px] rounded-2xl overflow-hidden',
+        'bg-background/80 backdrop-blur-xl',
+        'border border-border/50',
+        'shadow-2xl shadow-black/20'
       )}
     >
       <div
         className="h-5 bg-muted/40 cursor-move flex items-center justify-center border-b border-border/30"
-        style={{ WebkitAppRegion: "drag" } as React.CSSProperties}
+        style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
       >
         <div className="w-8 h-1 rounded-full bg-muted-foreground/30" />
       </div>
-      
+
       <PanelHeader isLearning={isLearning} memoryCount={memories.length} onCollapse={onCollapse} />
-      
+
       <ActivityToast recentActivity={recentActivity} />
-      
+
       <CaptureToggle captureEnabled={captureEnabled} onToggleCapture={onToggleCapture} />
-      
+
       <MemoryList memories={memories} />
-      
+
       <PanelFooter />
     </motion.div>
   )
@@ -77,9 +77,9 @@ function PanelHeader({
       <div className="flex items-center gap-3">
         <div
           className={cn(
-            "p-2 rounded-lg",
-            "bg-muted border border-border/50",
-            isLearning && "animate-pulse"
+            'p-2 rounded-lg',
+            'bg-muted border border-border/50',
+            isLearning && 'animate-pulse'
           )}
         >
           <Brain className="w-4 h-4 text-violet-500" />
@@ -102,16 +102,14 @@ function ActivityToast({ recentActivity }: { recentActivity: string | null }) {
       {recentActivity && (
         <motion.div
           initial={{ height: 0, opacity: 0 }}
-          animate={{ height: "auto", opacity: 1 }}
+          animate={{ height: 'auto', opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
           className="overflow-hidden"
         >
           <div className="px-4 py-2 bg-violet-500/10 border-b border-violet-500/20">
             <div className="flex items-center gap-2">
               <Sparkles className="w-3 h-3 text-violet-500 animate-pulse" />
-              <span className="text-xs text-violet-600 dark:text-violet-400">
-                {recentActivity}
-              </span>
+              <span className="text-xs text-violet-600 dark:text-violet-400">{recentActivity}</span>
             </div>
           </div>
         </motion.div>
@@ -160,10 +158,10 @@ function MemoryList({ memories }: { memories: Memory[] }) {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.05 }}
               className={cn(
-                "p-2.5 rounded-lg text-xs",
-                "bg-muted/50 hover:bg-muted/80",
-                "border border-transparent hover:border-border/50",
-                "transition-colors cursor-default"
+                'p-2.5 rounded-lg text-xs',
+                'bg-muted/50 hover:bg-muted/80',
+                'border border-transparent hover:border-border/50',
+                'transition-colors cursor-default'
               )}
             >
               <p className="line-clamp-2">{memory.memory}</p>

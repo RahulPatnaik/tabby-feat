@@ -1,13 +1,13 @@
-"use client";
+'use client'
 
-import { useChat } from "@ai-sdk/react";
-import { useState, useRef, useCallback, useEffect } from "react";
-import { UIMessage } from "ai";
+import { useChat } from '@ai-sdk/react'
+import { useState, useRef, useCallback, useEffect } from 'react'
+import { UIMessage } from 'ai'
 import {
   Conversation,
   ConversationContent,
   ConversationScrollButton,
-} from "@/components/ai-elements/conversation";
+} from '@/components/ai-elements/conversation'
 import {
   PromptInput,
   PromptInputBody,
@@ -15,220 +15,226 @@ import {
   PromptInputSubmit,
   PromptInputTextarea,
   type PromptInputMessage,
-} from "@/components/ai-elements/prompt-input";
+} from '@/components/ai-elements/prompt-input'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { ChatMessages } from "../chat/chat-messages";
-import { Button } from "@/components/ui/button";
-import { Kbd } from "@/components/ui/kbd";
-import { ArrowLeft, X, MessageSquare, History, Plus, Trash2, Volume2, VolumeX } from "lucide-react";
-import { generateUUID } from "@/lib/utils/generate-uuid";
+} from '@/components/ui/dropdown-menu'
+import { ChatMessages } from '../chat/chat-messages'
+import { Button } from '@/components/ui/button'
+import { Kbd } from '@/components/ui/kbd'
+import { ArrowLeft, X, MessageSquare, History, Plus, Trash2, Volume2, VolumeX } from 'lucide-react'
+import { generateUUID } from '@/lib/utils/generate-uuid'
 import {
   getConversations,
   getConversationMessages,
   deleteConversation,
-} from "@/lib/conversations-api";
-import { Conversation as ConversationType } from "@/lib/ai/types";
-import { defaultModel, models } from "@/lib/ai/models";
-import { ModelSelector } from "@/components/chat/model-selector";
-import { VoiceInputButton } from "@/components/chat/voice-input-button";
-import { VoiceModeToggle, type VoiceMode } from "@/components/chat/voice-mode-toggle";
-import { useAudioRecorder } from "@/hooks/use-audio-recorder";
-import { useSpeechPlayback } from "@/hooks/use-speech-playback";
-import { createAuthenticatedChatTransport } from "@/lib/api-url";
+} from '@/lib/conversations-api'
+import { Conversation as ConversationType } from '@/lib/ai/types'
+import { defaultModel, models } from '@/lib/ai/models'
+import { ModelSelector } from '@/components/chat/model-selector'
+import { VoiceInputButton } from '@/components/chat/voice-input-button'
+import { VoiceModeToggle, type VoiceMode } from '@/components/chat/voice-mode-toggle'
+import { useAudioRecorder } from '@/hooks/use-audio-recorder'
+import { useSpeechPlayback } from '@/hooks/use-speech-playback'
+import { createAuthenticatedChatTransport } from '@/lib/api-url'
 interface ChatPanelProps {
-  selectedText?: string;
-  onBack: () => void;
-  onClose: () => void;
+  selectedText?: string
+  onBack: () => void
+  onClose: () => void
 }
 
 export function ChatPanel({ selectedText, onBack, onClose }: ChatPanelProps) {
-  const [input, setInput] = useState("");
-  const [selectedModel, setSelectedModel] = useState<string>(defaultModel);
-  const [activeChatId, setActiveChatId] = useState<string>(() => generateUUID());
-  const [conversations, setConversations] = useState<ConversationType[]>([]);
-  const [isLoadingConversations, setIsLoadingConversations] = useState(true);
-  const [voiceMode, setVoiceMode] = useState<VoiceMode>("input");
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const lastMessageCountRef = useRef(0);
+  const [input, setInput] = useState('')
+  const [selectedModel, setSelectedModel] = useState<string>(defaultModel)
+  const [activeChatId, setActiveChatId] = useState<string>(() => generateUUID())
+  const [conversations, setConversations] = useState<ConversationType[]>([])
+  const [isLoadingConversations, setIsLoadingConversations] = useState(true)
+  const [voiceMode, setVoiceMode] = useState<VoiceMode>('input')
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const lastMessageCountRef = useRef(0)
 
-  const { isPlaying, playText, stopPlayback } = useSpeechPlayback();
+  const { isPlaying, playText, stopPlayback } = useSpeechPlayback()
 
   const { messages, status, sendMessage, setMessages } = useChat({
-    transport: createAuthenticatedChatTransport("/api/chat"),
+    transport: createAuthenticatedChatTransport('/api/chat'),
     generateId: () => generateUUID(),
     onError: (error) => {
-      console.error("Chat error:", error);
+      console.error('Chat error:', error)
     },
     onFinish: () => {
-      loadConversations();
+      loadConversations()
     },
-  });
+  })
 
-  const handleVoiceTranscription = useCallback((text: string) => {
-    if (voiceMode === "conversational") {
-      sendMessage(
-        { parts: [{ type: "text", text }] },
-        {
-          body: {
-            model: selectedModel,
-            conversationId: activeChatId,
-          },
-        }
-      );
-    } else {
-      setInput((prev) => prev + (prev ? " " : "") + text);
-      textareaRef.current?.focus();
-    }
-  }, [voiceMode, sendMessage, selectedModel, activeChatId]);
+  const handleVoiceTranscription = useCallback(
+    (text: string) => {
+      if (voiceMode === 'conversational') {
+        sendMessage(
+          { parts: [{ type: 'text', text }] },
+          {
+            body: {
+              model: selectedModel,
+              conversationId: activeChatId,
+            },
+          }
+        )
+      } else {
+        setInput((prev) => prev + (prev ? ' ' : '') + text)
+        textareaRef.current?.focus()
+      }
+    },
+    [voiceMode, sendMessage, selectedModel, activeChatId]
+  )
 
   const { isRecording, isTranscribing, startRecording, stopRecording } = useAudioRecorder({
     onTranscription: handleVoiceTranscription,
-  });
+  })
 
-  const prevStatusRef = useRef<string>(status);
-  const prevMessageCountRef = useRef<number>(0);
+  const prevStatusRef = useRef<string>(status)
+  const prevMessageCountRef = useRef<number>(0)
 
   useEffect(() => {
-    if (voiceMode !== "conversational") {
-      prevStatusRef.current = status;
-      return;
+    if (voiceMode !== 'conversational') {
+      prevStatusRef.current = status
+      return
     }
 
-    const assistantMessages = messages.filter((m) => m.role === "assistant");
-    const wasStreaming = prevStatusRef.current === "streaming";
-    const isNowReady = status === "ready";
-    const hasNewMessage = assistantMessages.length > prevMessageCountRef.current;
+    const assistantMessages = messages.filter((m) => m.role === 'assistant')
+    const wasStreaming = prevStatusRef.current === 'streaming'
+    const isNowReady = status === 'ready'
+    const hasNewMessage = assistantMessages.length > prevMessageCountRef.current
 
     if (wasStreaming && isNowReady && hasNewMessage) {
-      const lastMessage = assistantMessages[assistantMessages.length - 1];
+      const lastMessage = assistantMessages[assistantMessages.length - 1]
       const textContent = lastMessage.parts
-        ?.filter((p): p is { type: "text"; text: string } => p.type === "text")
+        ?.filter((p): p is { type: 'text'; text: string } => p.type === 'text')
         .map((p) => p.text)
-        .join(" ");
+        .join(' ')
 
       if (textContent) {
-        playText(textContent);
+        playText(textContent)
       }
-      prevMessageCountRef.current = assistantMessages.length;
+      prevMessageCountRef.current = assistantMessages.length
     }
 
-    prevStatusRef.current = status;
-  }, [messages, voiceMode, playText, status]);
-
+    prevStatusRef.current = status
+  }, [messages, voiceMode, playText, status])
 
   const loadConversations = useCallback(async () => {
     try {
-      const convs = await getConversations();
-      setConversations(convs);
+      const convs = await getConversations()
+      setConversations(convs)
     } catch (error) {
-      console.error("Error loading conversations:", error);
+      console.error('Error loading conversations:', error)
     } finally {
-      setIsLoadingConversations(false);
+      setIsLoadingConversations(false)
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
-    loadConversations();
-  }, [loadConversations]);
+    loadConversations()
+  }, [loadConversations])
 
   const handleSwitchChat = useCallback(
     async (conversationId: string) => {
-      setActiveChatId(conversationId);
-      lastMessageCountRef.current = 0;
+      setActiveChatId(conversationId)
+      lastMessageCountRef.current = 0
       try {
-        const msgs = await getConversationMessages(conversationId);
-        setMessages(msgs);
+        const msgs = await getConversationMessages(conversationId)
+        setMessages(msgs)
       } catch (error) {
-        console.error("Error loading messages:", error);
+        console.error('Error loading messages:', error)
       }
     },
     [setMessages]
-  );
+  )
 
   const handleNewChat = useCallback(() => {
-    const newId = generateUUID();
-    setActiveChatId(newId);
-    setMessages([]);
-    lastMessageCountRef.current = 0;
-  }, [setMessages]);
+    const newId = generateUUID()
+    setActiveChatId(newId)
+    setMessages([])
+    lastMessageCountRef.current = 0
+  }, [setMessages])
 
   const handleDeleteChat = useCallback(
     async (e: React.MouseEvent, conversationId: string) => {
-      e.stopPropagation();
+      e.stopPropagation()
       try {
-        await deleteConversation(conversationId);
-        setConversations((prev) => prev.filter((c) => c.id !== conversationId));
+        await deleteConversation(conversationId)
+        setConversations((prev) => prev.filter((c) => c.id !== conversationId))
         if (activeChatId === conversationId) {
-          handleNewChat();
+          handleNewChat()
         }
       } catch (error) {
-        console.error("Error deleting conversation:", error);
+        console.error('Error deleting conversation:', error)
       }
     },
     [activeChatId, handleNewChat]
-  );
+  )
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInput(e.target.value);
-  };
+    setInput(e.target.value)
+  }
 
   const handlePromptSubmit = useCallback(
     (promptMessage: PromptInputMessage) => {
-      const text = input.trim();
-      if (!text) return;
+      const text = input.trim()
+      if (!text) return
 
       sendMessage(
-        { parts: [{ type: "text", text }] },
+        { parts: [{ type: 'text', text }] },
         {
           body: {
             model: selectedModel,
             conversationId: activeChatId,
           },
         }
-      );
-      setInput("");
+      )
+      setInput('')
     },
     [input, sendMessage, activeChatId, selectedModel]
-  );
+  )
 
-  const isLoading = status === "streaming" || status === "submitted";
-  const isDisabled = isLoading || isRecording || isTranscribing;
+  const isLoading = status === 'streaming' || status === 'submitted'
+  const isDisabled = isLoading || isRecording || isTranscribing
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        onBack();
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        onBack()
       }
-      if (e.ctrlKey && e.key === "t") {
-        e.preventDefault();
+      if (e.ctrlKey && e.key === 't') {
+        e.preventDefault()
         if (isRecording) {
-          stopRecording();
+          stopRecording()
         } else if (!isTranscribing && !isLoading) {
-          startRecording();
+          startRecording()
         }
       }
-    };
+    }
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [onBack, isRecording, isTranscribing, isLoading, startRecording, stopRecording]);
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [onBack, isRecording, isTranscribing, isLoading, startRecording, stopRecording])
 
   useEffect(() => {
-    textareaRef.current?.focus();
-  }, []);
-
+    textareaRef.current?.focus()
+  }, [])
 
   return (
     <div className="flex h-full flex-col">
       <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-3">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={onBack} className="h-8 w-8 transition-colors duration-150">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onBack}
+            className="h-8 w-8 transition-colors duration-150"
+          >
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div className="flex items-center gap-2.5">
@@ -249,7 +255,11 @@ export function ChatPanel({ selectedText, onBack, onClose }: ChatPanelProps) {
           )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 transition-colors duration-150">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 transition-colors duration-150"
+              >
                 <History className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -276,10 +286,20 @@ export function ChatPanel({ selectedText, onBack, onClose }: ChatPanelProps) {
               )}
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button variant="ghost" size="icon" onClick={handleNewChat} className="h-8 w-8 transition-colors duration-150">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleNewChat}
+            className="h-8 w-8 transition-colors duration-150"
+          >
             <Plus className="h-4 w-4" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8 transition-colors duration-150">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            className="h-8 w-8 transition-colors duration-150"
+          >
             <X className="h-4 w-4" />
           </Button>
         </div>
@@ -291,9 +311,7 @@ export function ChatPanel({ selectedText, onBack, onClose }: ChatPanelProps) {
             <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
               <MessageSquare className="mb-4 h-12 w-12 opacity-50" />
               <h3 className="font-medium">Start a conversation</h3>
-              <p className="mt-1 text-sm">
-                Ask me anything or use voice input
-              </p>
+              <p className="mt-1 text-sm">Ask me anything or use voice input</p>
             </div>
           )}
           <ChatMessages isLoading={isLoading} messages={messages} />
@@ -302,16 +320,19 @@ export function ChatPanel({ selectedText, onBack, onClose }: ChatPanelProps) {
       </Conversation>
 
       <div className="border-t border-white/[0.06] p-3">
-        <PromptInput
-          onSubmit={handlePromptSubmit}
-          className="border-white/[0.08] w-full"
-        >
+        <PromptInput onSubmit={handlePromptSubmit} className="border-white/[0.08] w-full">
           <PromptInputBody>
             <PromptInputTextarea
               onChange={handleInputChange}
               ref={textareaRef}
               value={input}
-              placeholder={isRecording ? "Listening..." : isTranscribing ? "Transcribing..." : "Type or speak..."}
+              placeholder={
+                isRecording
+                  ? 'Listening...'
+                  : isTranscribing
+                    ? 'Transcribing...'
+                    : 'Type or speak...'
+              }
               name="message"
               disabled={isDisabled}
             />
@@ -333,7 +354,7 @@ export function ChatPanel({ selectedText, onBack, onClose }: ChatPanelProps) {
             />
             <PromptInputSubmit
               disabled={!input.trim() || isLoading}
-              status={isLoading ? "streaming" : "ready"}
+              status={isLoading ? 'streaming' : 'ready'}
             />
           </PromptInputFooter>
         </PromptInput>
@@ -359,5 +380,5 @@ export function ChatPanel({ selectedText, onBack, onClose }: ChatPanelProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }

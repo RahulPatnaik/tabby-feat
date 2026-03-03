@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -48,7 +48,8 @@
   --animate-fadeIn: fadeIn 2s ease-in-out forwards;
 }
 
-html, body {
+html,
+body {
   background: transparent !important;
 }
 
@@ -286,13 +287,13 @@ html, body {
     : drag blocks cursor events */
 }
 #close {
-  background: #FF605C;
+  background: #ff605c;
 }
 #minimize {
-  background: #FFBD44;
+  background: #ffbd44;
 }
 #maximize {
-  background: #00CA4E;
+  background: #00ca4e;
 }
 #title {
   -webkit-app-region: no-drag;
@@ -303,7 +304,7 @@ html, body {
   transform: translateX(-50%);
 }
 
-.controller-button{
+.controller-button {
   cursor: pointer;
 }
 

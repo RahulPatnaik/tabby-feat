@@ -23,29 +23,29 @@ async function waitForFileAvailability(
   initialDelayMs: number = 500
 ): Promise<boolean> {
   let delay = initialDelayMs
-  
+
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       console.log(`[waitForFileAvailability] Attempt ${attempt}/${maxRetries}, checking URL...`)
-      
+
       const response = await fetch(url, { method: 'HEAD' })
-      
+
       if (response.ok) {
         console.log(`[waitForFileAvailability] File is available after ${attempt} attempt(s)`)
         return true
       }
-      
+
       console.log(`[waitForFileAvailability] Got status ${response.status}, retrying...`)
     } catch (error) {
       console.log(`[waitForFileAvailability] Fetch error on attempt ${attempt}:`, error)
     }
-    
+
     if (attempt < maxRetries) {
-      await new Promise(resolve => setTimeout(resolve, delay))
+      await new Promise((resolve) => setTimeout(resolve, delay))
       delay = Math.min(delay * 1.5, 3000)
     }
   }
-  
+
   console.warn('[waitForFileAvailability] File not available after all retries')
   return false
 }
@@ -62,12 +62,10 @@ export async function uploadScreenshot(
 
   console.log('[uploadScreenshot] Uploading:', filename, 'size:', blob.size, 'bytes')
 
-  const { data, error } = await supabase.storage
-    .from(BUCKET_NAME)
-    .upload(filename, blob, {
-      contentType: 'image/png',
-      upsert: false,
-    })
+  const { data, error } = await supabase.storage.from(BUCKET_NAME).upload(filename, blob, {
+    contentType: 'image/png',
+    upsert: false,
+  })
 
   if (error) {
     console.error('[uploadScreenshot] Upload error:', error)
@@ -76,9 +74,9 @@ export async function uploadScreenshot(
 
   console.log('[uploadScreenshot] Upload success, path:', data.path)
 
-  const { data: { publicUrl } } = supabase.storage
-    .from(BUCKET_NAME)
-    .getPublicUrl(data.path)
+  const {
+    data: { publicUrl },
+  } = supabase.storage.from(BUCKET_NAME).getPublicUrl(data.path)
 
   console.log('[uploadScreenshot] Public URL:', publicUrl)
 

@@ -1,10 +1,10 @@
-"use client";
+'use client'
 
-import Image from "next/image";
-import { SettingsPage } from "./settings-page";
+import Image from 'next/image'
+import { SettingsPage } from './settings-page'
 
-const appName = process.env.NEXT_PUBLIC_APP_NAME || "Tabby";
-const appIcon = process.env.NEXT_PUBLIC_APP_ICON || "/logos/tabby-logo.png";
+const appName = process.env.NEXT_PUBLIC_APP_NAME || 'Tabby'
+const appIcon = process.env.NEXT_PUBLIC_APP_ICON || '/logos/tabby-logo.png'
 
 export function AboutTab() {
   return (
@@ -28,14 +28,13 @@ export function AboutTab() {
           <h1 className="text-3xl font-serif font-normal text-foreground tracking-tight">
             {appName}
           </h1>
-          <p className="text-sm text-muted-foreground">
-            Version 2.0.0
-          </p>
+          <p className="text-sm text-muted-foreground">Version 2.0.0</p>
         </div>
 
         {/* Description */}
         <p className="text-muted-foreground leading-relaxed font-light max-w-md">
-          Your intelligent writing assistant. Enhance your workflow with AI-powered text transformations, coding interview assistance, and persistent memory.
+          Your intelligent writing assistant. Enhance your workflow with AI-powered text
+          transformations, coding interview assistance, and persistent memory.
         </p>
 
         {/* Footer */}
@@ -49,6 +48,5 @@ export function AboutTab() {
         </div>
       </div>
     </SettingsPage>
-  );
+  )
 }
-

@@ -1,18 +1,18 @@
-"use client";
+'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { getToolName, isToolUIPart, TextPart, ToolUIPart } from "ai";
-import { useVoiceChat } from "@/hooks/use-voice-chat";
-import { UIMessageWithCompleted, OPENAI_VOICE } from "@/lib/ai/voice";
-import { Button } from "@/components/ui/button";
-import { Kbd } from "@/components/ui/kbd";
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { getToolName, isToolUIPart, TextPart, ToolUIPart } from 'ai'
+import { useVoiceChat } from '@/hooks/use-voice-chat'
+import { UIMessageWithCompleted, OPENAI_VOICE } from '@/lib/ai/voice'
+import { Button } from '@/components/ui/button'
+import { Kbd } from '@/components/ui/kbd'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/dropdown-menu'
+import { cn } from '@/lib/utils'
 import {
   ArrowLeft,
   X,
@@ -26,16 +26,16 @@ import {
   ChevronRight,
   MessageSquare,
   MessagesSquare,
-} from "lucide-react";
+} from 'lucide-react'
 
 interface VoiceAgentPanelProps {
-  onBack: () => void;
-  onClose: () => void;
+  onBack: () => void
+  onClose: () => void
 }
 
 export function VoiceAgentPanel({ onBack, onClose }: VoiceAgentPanelProps) {
-  const [selectedVoice, setSelectedVoice] = useState<string>(OPENAI_VOICE.Ash);
-  const [useCompactView, setUseCompactView] = useState(true);
+  const [selectedVoice, setSelectedVoice] = useState<string>(OPENAI_VOICE.Ash)
+  const [useCompactView, setUseCompactView] = useState(true)
 
   const {
     isListening,
@@ -49,63 +49,71 @@ export function VoiceAgentPanel({ onBack, onClose }: VoiceAgentPanelProps) {
     stop,
     startListening,
     stopListening,
-  } = useVoiceChat({ voice: selectedVoice });
+  } = useVoiceChat({ voice: selectedVoice })
 
   const handleEndSession = useCallback(async () => {
-    await stop();
-  }, [stop]);
+    await stop()
+  }, [stop])
 
   const handleMicToggle = useCallback(async () => {
     if (!isActive) {
-      await start();
+      await start()
     } else if (isListening) {
-      await stopListening();
+      await stopListening()
     } else {
-      await startListening();
+      await startListening()
     }
-  }, [isActive, isListening, start, startListening, stopListening]);
+  }, [isActive, isListening, start, startListening, stopListening])
 
   const statusMessage = useMemo(() => {
     if (isLoading) {
-      return <span className="animate-pulse">Preparing...</span>;
+      return <span className="animate-pulse">Preparing...</span>
     }
     if (!isActive) {
-      return <span>Click the phone button to start</span>;
+      return <span>Click the phone button to start</span>
     }
     if (!isListening) {
-      return <span>Your mic is off</span>;
+      return <span>Your mic is off</span>
     }
     if (!isAssistantSpeaking && messages.length === 0) {
-      return <span>Ready when you are. Just start talking.</span>;
+      return <span>Ready when you are. Just start talking.</span>
     }
     if (isUserSpeaking && useCompactView) {
-      return <span className="animate-pulse">Listening...</span>;
+      return <span className="animate-pulse">Listening...</span>
     }
     if (!isAssistantSpeaking && !isUserSpeaking) {
-      return <span>Ready when you are. Just start talking.</span>;
+      return <span>Ready when you are. Just start talking.</span>
     }
-    return null;
-  }, [isAssistantSpeaking, isUserSpeaking, isActive, isLoading, isListening, messages.length, useCompactView]);
+    return null
+  }, [
+    isAssistantSpeaking,
+    isUserSpeaking,
+    isActive,
+    isLoading,
+    isListening,
+    messages.length,
+    useCompactView,
+  ])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        e.preventDefault();
+      if (e.key === 'Escape') {
+        e.preventDefault()
         if (isActive) {
-          handleEndSession();
+          handleEndSession()
         } else {
-          onBack();
+          onBack()
         }
       }
-      if (e.key === " " && !e.repeat) {
-        e.preventDefault();
-        handleMicToggle();
+      if (e.key === ' ' && !e.repeat) {
+        e.preventDefault()
+        handleMicToggle()
       }
-    };
+    }
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [onBack, isActive, handleEndSession, handleMicToggle]);
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [onBack, isActive, handleEndSession, handleMicToggle])
 
   return (
     <div className="flex h-full flex-col">
@@ -146,9 +154,7 @@ export function VoiceAgentPanel({ onBack, onClose }: VoiceAgentPanelProps) {
                   className="flex items-center justify-between"
                 >
                   {key}
-                  {value === selectedVoice && (
-                    <span className="text-primary">✓</span>
-                  )}
+                  {value === selectedVoice && <span className="text-primary">✓</span>}
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>
@@ -167,9 +173,7 @@ export function VoiceAgentPanel({ onBack, onClose }: VoiceAgentPanelProps) {
               <div>
                 <p className="font-medium">Error</p>
                 <p className="text-sm">{error.message}</p>
-                <p className="text-sm mt-2 text-muted-foreground">
-                  Please close and try again.
-                </p>
+                <p className="text-sm mt-2 text-muted-foreground">Please close and try again.</p>
               </div>
             </div>
           </div>
@@ -195,16 +199,16 @@ export function VoiceAgentPanel({ onBack, onClose }: VoiceAgentPanelProps) {
           disabled={isLoading}
           onClick={handleMicToggle}
           className={cn(
-            "rounded-full h-12 w-12 transition-all duration-300",
+            'rounded-full h-12 w-12 transition-all duration-300',
             isLoading
-              ? "bg-muted/60 animate-pulse"
+              ? 'bg-muted/60 animate-pulse'
               : !isActive
-                ? "bg-primary/15 text-primary hover:bg-primary/25 hover:scale-105"
+                ? 'bg-primary/15 text-primary hover:bg-primary/25 hover:scale-105'
                 : !isListening
-                  ? "bg-muted/40 text-muted-foreground hover:bg-muted/60"
+                  ? 'bg-muted/40 text-muted-foreground hover:bg-muted/60'
                   : isUserSpeaking
-                    ? "bg-primary/25 text-primary ring-2 ring-primary/30"
-                    : "bg-primary/10 text-primary hover:bg-primary/20"
+                    ? 'bg-primary/25 text-primary ring-2 ring-primary/30'
+                    : 'bg-primary/10 text-primary hover:bg-primary/20'
           )}
         >
           {isLoading ? (
@@ -212,7 +216,7 @@ export function VoiceAgentPanel({ onBack, onClose }: VoiceAgentPanelProps) {
           ) : !isActive ? (
             <Phone className="h-5 w-5" />
           ) : isListening ? (
-            <Mic className={cn("h-5 w-5", isUserSpeaking && "text-primary")} />
+            <Mic className={cn('h-5 w-5', isUserSpeaking && 'text-primary')} />
           ) : (
             <MicOff className="h-5 w-5" />
           )}
@@ -233,31 +237,31 @@ export function VoiceAgentPanel({ onBack, onClose }: VoiceAgentPanelProps) {
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <Kbd>esc</Kbd>
-            <span>{isActive ? "end" : "back"}</span>
+            <span>{isActive ? 'end' : 'back'}</span>
           </div>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <Kbd>space</Kbd>
-            <span>{!isActive ? "start" : isListening ? "mute" : "unmute"}</span>
+            <span>{!isActive ? 'start' : isListening ? 'mute' : 'unmute'}</span>
           </div>
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 function ConversationView({ messages }: { messages: UIMessageWithCompleted[] }) {
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (ref.current) {
       ref.current.scrollTo({
         top: ref.current.scrollHeight,
-        behavior: "smooth",
-      });
+        behavior: 'smooth',
+      })
     }
-  }, [messages.length]);
+  }, [messages.length])
 
   return (
     <div className="w-full overflow-y-auto h-full px-4 py-4" ref={ref}>
@@ -266,35 +270,33 @@ function ConversationView({ messages }: { messages: UIMessageWithCompleted[] }) 
           <div
             key={message.id}
             className={cn(
-              "flex px-3 py-2.5 rounded-xl",
-              message.role === "user"
-                ? "ml-auto max-w-[80%] bg-primary/8 border border-primary/10"
-                : "mr-auto max-w-[80%] bg-muted/30"
+              'flex px-3 py-2.5 rounded-xl',
+              message.role === 'user'
+                ? 'ml-auto max-w-[80%] bg-primary/8 border border-primary/10'
+                : 'mr-auto max-w-[80%] bg-muted/30'
             )}
           >
             {!message.completed ? (
               <span className="text-muted-foreground animate-pulse">...</span>
             ) : (
               message.parts.map((part, index) => {
-                if (part.type === "text") {
+                if (part.type === 'text') {
                   return (
                     <p key={index} className="text-sm">
-                      {(part as TextPart).text || "..."}
+                      {(part as TextPart).text || '...'}
                     </p>
-                  );
+                  )
                 } else if (isToolUIPart(part)) {
-                  return (
-                    <ToolBadge key={index} part={part as ToolUIPart} />
-                  );
+                  return <ToolBadge key={index} part={part as ToolUIPart} />
                 }
-                return null;
+                return null
               })
             )}
           </div>
         ))}
       </div>
     </div>
-  );
+  )
 }
 
 function CompactMessageView({ messages }: { messages: UIMessageWithCompleted[] }) {
@@ -302,13 +304,14 @@ function CompactMessageView({ messages }: { messages: UIMessageWithCompleted[] }
     const toolParts = messages
       .filter((msg) => msg.parts.some(isToolUIPart))
       .map((msg) => msg.parts.find(isToolUIPart) as ToolUIPart | undefined)
-      .filter(Boolean) as ToolUIPart[];
+      .filter(Boolean) as ToolUIPart[]
 
-    const textPart = messages.findLast((msg) => msg.role === "assistant")
-      ?.parts[0] as TextPart | undefined;
-      
-    return { toolParts, textPart };
-  }, [messages]);
+    const textPart = messages.findLast((msg) => msg.role === 'assistant')?.parts[0] as
+      | TextPart
+      | undefined
+
+    return { toolParts, textPart }
+  }, [messages])
 
   return (
     <div className="relative w-full h-full overflow-hidden flex items-center justify-center p-4">
@@ -323,27 +326,27 @@ function CompactMessageView({ messages }: { messages: UIMessageWithCompleted[] }
       {textPart?.text && (
         <div className="max-w-[80%] text-center">
           <p className="text-lg font-medium leading-relaxed">
-            {textPart.text.split(" ").map((word, i) => (
+            {textPart.text.split(' ').map((word, i) => (
               <span key={i} className="animate-in fade-in duration-300">
-                {word}{" "}
+                {word}{' '}
               </span>
             ))}
           </p>
         </div>
       )}
     </div>
-  );
+  )
 }
 
 function ToolBadge({ part, compact = false }: { part: ToolUIPart; compact?: boolean }) {
-  const isExecuting = part.state.startsWith("input");
-  const toolName = getToolName(part);
+  const isExecuting = part.state.startsWith('input')
+  const toolName = getToolName(part)
 
   return (
     <div
       className={cn(
-        "flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-muted/40 border border-border/40 text-xs",
-        compact ? "max-w-[140px]" : ""
+        'flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-muted/40 border border-border/40 text-xs',
+        compact ? 'max-w-[140px]' : ''
       )}
     >
       <Wrench className="h-3 w-3 shrink-0" />
@@ -354,5 +357,5 @@ function ToolBadge({ part, compact = false }: { part: ToolUIPart; compact?: bool
         <ChevronRight className="h-3 w-3 shrink-0" />
       )}
     </div>
-  );
+  )
 }

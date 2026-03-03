@@ -1,19 +1,19 @@
-"use client";
+'use client'
 
-import { GitBranch, ExternalLink } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { GitBranch, ExternalLink } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 interface PrepSimilarTabProps {
-  similar?: Array<{ name: string; slug?: string; reason: string }>;
+  similar?: Array<{ name: string; slug?: string; reason: string }>
 }
 
 const openExternal = (url: string) => {
-  if (typeof window !== "undefined" && window.electron?.openExternal) {
-    window.electron.openExternal(url);
+  if (typeof window !== 'undefined' && window.electron?.openExternal) {
+    window.electron.openExternal(url)
   } else {
-    window.open(url, "_blank", "noopener,noreferrer");
+    window.open(url, '_blank', 'noopener,noreferrer')
   }
-};
+}
 
 export function PrepSimilarTab({ similar }: PrepSimilarTabProps) {
   if (!similar || similar.length === 0) {
@@ -22,7 +22,7 @@ export function PrepSimilarTab({ similar }: PrepSimilarTabProps) {
         <GitBranch className="mb-4 h-10 w-10 opacity-40" />
         <p className="text-sm">No similar problems found.</p>
       </div>
-    );
+    )
   }
 
   return (
@@ -52,5 +52,5 @@ export function PrepSimilarTab({ similar }: PrepSimilarTabProps) {
         ))}
       </div>
     </div>
-  );
+  )
 }

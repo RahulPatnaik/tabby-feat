@@ -1,8 +1,8 @@
-"use client"
+'use client'
 
-import { ModeToggle } from "@/components/global/theme-switcher"
-import { SidebarTrigger } from "@/components/ui/sidebar"
-import { Separator } from "@/components/ui/separator"
+import { ModeToggle } from '@/components/global/theme-switcher'
+import { SidebarTrigger } from '@/components/ui/sidebar'
+import { Separator } from '@/components/ui/separator'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -10,8 +10,8 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { usePathname } from "next/navigation"
+} from '@/components/ui/breadcrumb'
+import { usePathname } from 'next/navigation'
 
 type RouteConfig = {
   name: string
@@ -22,19 +22,13 @@ type RouteConfig = {
 
 type Routes = Record<string, RouteConfig>
 
-export function Breadcrumbs({ 
-  action,
-  routes,
-}: { 
-  action?: React.ReactNode
-  routes?: Routes
-}) {
+export function Breadcrumbs({ action, routes }: { action?: React.ReactNode; routes?: Routes }) {
   const pathname = usePathname()
-  
+
   const formatPathSegment = (segment: string) => {
     return segment
       .split('-')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ')
   }
 
@@ -53,19 +47,17 @@ export function Breadcrumbs({
 
     return undefined
   }
-  
+
   const getBreadcrumbs = () => {
     const segments = pathname.split('/').filter(Boolean)
     const items = []
-    let currentPath = ""
-    
+    let currentPath = ''
+
     // Always add home
-    const homeConfig = routes?.["/"]
+    const homeConfig = routes?.['/']
     items.push(
       <BreadcrumbItem key="home">
-        <BreadcrumbLink href="/">
-          {homeConfig?.name || "Home"}
-        </BreadcrumbLink>
+        <BreadcrumbLink href="/">{homeConfig?.name || 'Home'}</BreadcrumbLink>
       </BreadcrumbItem>
     )
 
@@ -73,12 +65,12 @@ export function Breadcrumbs({
     segments.forEach((segment, index) => {
       currentPath += `/${segment}`
       const routeConfig = findRouteConfig(currentPath)
-      
+
       // Get the display name - either from config or format the path segment
       const name = routeConfig?.name || formatPathSegment(segment)
-      
+
       items.push(<BreadcrumbSeparator key={`separator-${index}`} />)
-      
+
       if (index === segments.length - 1) {
         // Last segment - show as current page
         items.push(
@@ -90,9 +82,7 @@ export function Breadcrumbs({
         // Intermediate segment - show as link
         items.push(
           <BreadcrumbItem key={currentPath}>
-            <BreadcrumbLink href={routeConfig?.path || currentPath}>
-              {name}
-            </BreadcrumbLink>
+            <BreadcrumbLink href={routeConfig?.path || currentPath}>{name}</BreadcrumbLink>
           </BreadcrumbItem>
         )
       }
@@ -107,9 +97,7 @@ export function Breadcrumbs({
         <SidebarTrigger className="-ml-1" />
         <Separator orientation="vertical" className="mr-2 h-4" />
         <Breadcrumb>
-          <BreadcrumbList>
-            {getBreadcrumbs()}
-          </BreadcrumbList>
+          <BreadcrumbList>{getBreadcrumbs()}</BreadcrumbList>
         </Breadcrumb>
         <div className="ml-auto flex items-center gap-4">
           {action}
@@ -118,4 +106,4 @@ export function Breadcrumbs({
       </div>
     </header>
   )
-} 
+}

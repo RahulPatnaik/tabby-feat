@@ -1,11 +1,11 @@
-"use client"
+'use client'
 
-import { useState, useEffect } from "react"
-import { useQuery } from "@tanstack/react-query"
-import { AnimatePresence } from "motion/react"
-import { CollapsedBrain } from "./collapsed-brain"
-import { ExpandedPanel } from "./expanded-panel"
-import useUser from "@/hooks/use-user"
+import { useState, useEffect } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { AnimatePresence } from 'motion/react'
+import { CollapsedBrain } from './collapsed-brain'
+import { ExpandedPanel } from './expanded-panel'
+import useUser from '@/hooks/use-user'
 
 interface Memory {
   id: string
@@ -13,12 +13,12 @@ interface Memory {
   created_at: string
 }
 
-const MEMORY_API_URL = process.env.NEXT_PUBLIC_MEMORY_API_URL || "http://localhost:8000"
+const MEMORY_API_URL = process.env.NEXT_PUBLIC_MEMORY_API_URL || 'http://localhost:8000'
 
 async function fetchRecentMemories(userId: string): Promise<Memory[]> {
   const response = await fetch(`${MEMORY_API_URL}/memory/get_all`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ user_id: userId }),
   })
   const data = await response.json()
@@ -31,12 +31,12 @@ export function BrainPanel() {
   const [captureEnabled, setCaptureEnabled] = useState(false)
   const [isLearning, setIsLearning] = useState(false)
   const [recentActivity, setRecentActivity] = useState<string | null>(null)
-  
+
   const { data: user } = useUser()
   const userId = user?.id
 
   const { data: memories = [], refetch } = useQuery({
-    queryKey: ["recent-memories", userId],
+    queryKey: ['recent-memories', userId],
     queryFn: () => fetchRecentMemories(userId!),
     refetchInterval: 30000,
     enabled: !!userId,
@@ -61,19 +61,21 @@ export function BrainPanel() {
       console.log('[BrainPanel] Received screenshot for analysis')
       setIsLearning(true)
       setRecentActivity('Processing screenshot...')
-      
+
       try {
-        const { uploadScreenshot, deleteScreenshot } = await import('@/lib/supabase/upload-screenshot')
-        
+        const { uploadScreenshot, deleteScreenshot } =
+          await import('@/lib/supabase/upload-screenshot')
+
         const uploadResult = await uploadScreenshot(data.dataUrl, userId)
         console.log('[BrainPanel] Uploaded to:', uploadResult.url)
-        
+
         const response = await fetch(`${MEMORY_API_URL}/memory/add_image`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             image_url: uploadResult.url,
-            context: 'Analyze this screenshot and extract key context about what the user is working on.',
+            context:
+              'Analyze this screenshot and extract key context about what the user is working on.',
             user_id: userId,
             metadata: {
               source: 'screen_capture',
@@ -81,28 +83,28 @@ export function BrainPanel() {
             },
           }),
         })
-        
+
         const result = await response.json()
         console.log('[BrainPanel] Memory result:', result)
-        
+
         if (result.success) {
           setRecentActivity('New context captured')
           refetch()
           window.electron?.notifyAnalysisComplete?.(true)
-          
+
           setTimeout(() => {
             // deleteScreenshot(uploadResult.path).catch(console.error)
             console.log('[BrainPanel] Deleted screenshot after delay')
           }, 30000)
         } else {
-        //   await deleteScreenshot(uploadResult.path)
+          //   await deleteScreenshot(uploadResult.path)
         }
       } catch (error) {
         console.error('[BrainPanel] Analysis failed:', error)
         setRecentActivity('Analysis failed')
         window.electron?.notifyAnalysisComplete?.(false)
       }
-      
+
       setTimeout(() => setIsLearning(false), 2000)
       setTimeout(() => setRecentActivity(null), 5000)
     })

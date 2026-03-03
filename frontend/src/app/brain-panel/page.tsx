@@ -1,4 +1,4 @@
-import { BrainPanel } from "@/components/brain-panel"
+import { BrainPanel } from '@/components/brain-panel'
 
 export default function BrainPanelPage() {
   return <BrainPanel />

@@ -1,9 +1,9 @@
-"use client";
+'use client'
 
-import { LogOut, MoreHorizontal, Settings, User } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useTransition } from "react";
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { LogOut, MoreHorizontal, Settings, User } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useTransition } from 'react'
+import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,25 +11,21 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar";
-import { cn } from "@/lib/utils";
-import Avatar from "@/components/supaauth/avatar";
-import { createSupabaseBrowser } from "@/lib/supabase/client";
+} from '@/components/ui/dropdown-menu'
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar'
+import { cn } from '@/lib/utils'
+import Avatar from '@/components/supaauth/avatar'
+import { createSupabaseBrowser } from '@/lib/supabase/client'
 export function NavProfile({ user }: { user: any }) {
-  const router = useRouter();
-  const [isSignOut, startSignOut] = useTransition();
+  const router = useRouter()
+  const [isSignOut, startSignOut] = useTransition()
   const signout = () => {
     startSignOut(async () => {
-      const supabase = createSupabaseBrowser();
-      await supabase.auth.signOut();
-      router.push("/signin");
-    });
-  };
+      const supabase = createSupabaseBrowser()
+      await supabase.auth.signOut()
+      router.push('/signin')
+    })
+  }
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -38,10 +34,10 @@ export function NavProfile({ user }: { user: any }) {
             <SidebarMenuButton
               size="lg"
               className={cn(
-                "data-[state=open]:bg-accent data-[state=open]:text-accent-foreground",
+                'data-[state=open]:bg-accent data-[state=open]:text-accent-foreground',
                 {
-                  "animate-pulse": isSignOut,
-                },
+                  'animate-pulse': isSignOut,
+                }
               )}
             >
               <Avatar />
@@ -59,9 +55,7 @@ export function NavProfile({ user }: { user: any }) {
           >
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => document.getElementById("manage-profile")?.click()}
-            >
+            <DropdownMenuItem onClick={() => document.getElementById('manage-profile')?.click()}>
               <User className="mr-2 h-4 w-4" />
               Manage Account
             </DropdownMenuItem>
@@ -82,5 +76,5 @@ export function NavProfile({ user }: { user: any }) {
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  );
+  )
 }

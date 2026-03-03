@@ -1,7 +1,7 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import {
   Area,
   AreaChart,
@@ -18,59 +18,52 @@ import {
   XAxis,
   YAxis,
   Legend,
-} from "recharts";
+} from 'recharts'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  TrendingUp,
-  TrendingDown,
-  Activity,
-  Zap,
-  Clock,
-  Users,
-} from "lucide-react";
-import { getApiUrl } from "@/lib/api-url";
+} from '@/components/ui/select'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { TrendingUp, TrendingDown, Activity, Zap, Clock, Users } from 'lucide-react'
+import { getApiUrl } from '@/lib/api-url'
 
-type TimePeriod = "minute" | "hour" | "day";
+type TimePeriod = 'minute' | 'hour' | 'day'
 
 interface AnalyticsData {
-  timeSeries: { time: string; completions: number; latency: number }[];
-  distribution: { name: string; value: number; fill: string }[];
+  timeSeries: { time: string; completions: number; latency: number }[]
+  distribution: { name: string; value: number; fill: string }[]
 }
 
 interface StatsData {
-  totalCompletions: number;
-  completionsChange: number;
-  avgLatency: number;
-  latencyChange: number;
-  activeSessions: number;
-  sessionsChange: number;
-  successRate: number;
-  successRateChange: number;
+  totalCompletions: number
+  completionsChange: number
+  avgLatency: number
+  latencyChange: number
+  activeSessions: number
+  sessionsChange: number
+  successRate: number
+  successRateChange: number
 }
 
 async function fetchAnalytics(period: TimePeriod): Promise<AnalyticsData> {
   const res = await fetch(getApiUrl(`/api/dashboard/analytics?period=${period}`), {
-    credentials: "include",
-  });
-  const data = await res.json();
-  if (!data.success) throw new Error("Failed to fetch analytics");
-  return data.data;
+    credentials: 'include',
+  })
+  const data = await res.json()
+  if (!data.success) throw new Error('Failed to fetch analytics')
+  return data.data
 }
 
 async function fetchStats(): Promise<StatsData> {
-  const res = await fetch(getApiUrl("/api/dashboard/stats"), {
-    credentials: "include",
-  });
-  const data = await res.json();
-  if (!data.success) throw new Error("Failed to fetch stats");
-  return data.data;
+  const res = await fetch(getApiUrl('/api/dashboard/stats'), {
+    credentials: 'include',
+  })
+  const data = await res.json()
+  if (!data.success) throw new Error('Failed to fetch stats')
+  return data.data
 }
 
 function StatCard({
@@ -80,13 +73,13 @@ function StatCard({
   icon: Icon,
   iconColor,
 }: {
-  title: string;
-  value: string;
-  change: number;
-  icon: any;
-  iconColor: string;
+  title: string
+  value: string
+  change: number
+  icon: any
+  iconColor: string
 }) {
-  const isPositive = change > 0;
+  const isPositive = change > 0
   return (
     <div className="rounded-xl border border-border/50 bg-card p-5">
       <div className="flex items-center justify-between">
@@ -95,14 +88,10 @@ function StatCard({
         </div>
         <div
           className={`flex items-center gap-1 text-xs font-medium ${
-            isPositive ? "text-emerald-500" : "text-rose-500"
+            isPositive ? 'text-emerald-500' : 'text-rose-500'
           }`}
         >
-          {isPositive ? (
-            <TrendingUp className="h-3 w-3" />
-          ) : (
-            <TrendingDown className="h-3 w-3" />
-          )}
+          {isPositive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
           {Math.abs(change).toFixed(1)}%
         </div>
       </div>
@@ -111,28 +100,28 @@ function StatCard({
         <p className="text-sm text-muted-foreground mt-1">{title}</p>
       </div>
     </div>
-  );
+  )
 }
 
-const CHART_COLORS = ["#3b82f6", "#8b5cf6", "#f59e0b", "#10b981", "#6b7280"];
+const CHART_COLORS = ['#3b82f6', '#8b5cf6', '#f59e0b', '#10b981', '#6b7280']
 
 export default function AnalyticsPage() {
-  const [period, setPeriod] = useState<TimePeriod>("hour");
+  const [period, setPeriod] = useState<TimePeriod>('hour')
 
   const { data: analytics, isLoading: analyticsLoading } = useQuery({
-    queryKey: ["analytics", period],
+    queryKey: ['analytics', period],
     queryFn: () => fetchAnalytics(period),
     refetchInterval: 30000,
-  });
+  })
 
   const { data: stats, isLoading: statsLoading } = useQuery({
-    queryKey: ["stats"],
+    queryKey: ['stats'],
     queryFn: fetchStats,
     refetchInterval: 30000,
-  });
+  })
 
-  const timeSeries = analytics?.timeSeries || [];
-  const distribution = analytics?.distribution || [];
+  const timeSeries = analytics?.timeSeries || []
+  const distribution = analytics?.distribution || []
 
   return (
     <div className="min-h-screen bg-background p-6">
@@ -161,28 +150,28 @@ export default function AnalyticsPage() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <StatCard
             title="Total Completions"
-            value={statsLoading ? "..." : stats?.totalCompletions.toLocaleString() || "0"}
+            value={statsLoading ? '...' : stats?.totalCompletions.toLocaleString() || '0'}
             change={stats?.completionsChange || 0}
             icon={Zap}
             iconColor="bg-blue-500/10 text-blue-500"
           />
           <StatCard
             title="Avg Latency"
-            value={statsLoading ? "..." : `${stats?.avgLatency || 0}ms`}
+            value={statsLoading ? '...' : `${stats?.avgLatency || 0}ms`}
             change={stats?.latencyChange || 0}
             icon={Clock}
             iconColor="bg-amber-500/10 text-amber-500"
           />
           <StatCard
             title="Active Sessions"
-            value={statsLoading ? "..." : stats?.activeSessions.toString() || "0"}
+            value={statsLoading ? '...' : stats?.activeSessions.toString() || '0'}
             change={stats?.sessionsChange || 0}
             icon={Users}
             iconColor="bg-emerald-500/10 text-emerald-500"
           />
           <StatCard
             title="Success Rate"
-            value={statsLoading ? "..." : `${stats?.successRate || 0}%`}
+            value={statsLoading ? '...' : `${stats?.successRate || 0}%`}
             change={stats?.successRateChange || 0}
             icon={Activity}
             iconColor="bg-violet-500/10 text-violet-500"
@@ -241,9 +230,9 @@ export default function AnalyticsPage() {
                       <YAxis tick={{ fontSize: 11 }} tickLine={false} axisLine={false} />
                       <Tooltip
                         contentStyle={{
-                          backgroundColor: "var(--card)",
-                          border: "1px solid var(--border)",
-                          borderRadius: "8px",
+                          backgroundColor: 'var(--card)',
+                          border: '1px solid var(--border)',
+                          borderRadius: '8px',
                         }}
                       />
                       <Area
@@ -326,9 +315,9 @@ export default function AnalyticsPage() {
                     <YAxis tick={{ fontSize: 11 }} tickLine={false} axisLine={false} />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: "var(--card)",
-                        border: "1px solid var(--border)",
-                        borderRadius: "8px",
+                        backgroundColor: 'var(--card)',
+                        border: '1px solid var(--border)',
+                        borderRadius: '8px',
                       }}
                     />
                     <Legend />
@@ -366,7 +355,12 @@ export default function AnalyticsPage() {
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={distribution} layout="vertical">
                     <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
-                    <XAxis type="number" tick={{ fontSize: 11 }} tickLine={false} axisLine={false} />
+                    <XAxis
+                      type="number"
+                      tick={{ fontSize: 11 }}
+                      tickLine={false}
+                      axisLine={false}
+                    />
                     <YAxis
                       type="category"
                       dataKey="name"
@@ -377,9 +371,9 @@ export default function AnalyticsPage() {
                     />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: "var(--card)",
-                        border: "1px solid var(--border)",
-                        borderRadius: "8px",
+                        backgroundColor: 'var(--card)',
+                        border: '1px solid var(--border)',
+                        borderRadius: '8px',
                       }}
                     />
                     <Bar dataKey="value" radius={[0, 4, 4, 0]}>
@@ -395,5 +389,5 @@ export default function AnalyticsPage() {
         </Tabs>
       </div>
     </div>
-  );
+  )
 }

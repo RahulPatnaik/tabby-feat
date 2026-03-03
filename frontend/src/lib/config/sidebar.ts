@@ -1,44 +1,44 @@
-import Icons from "@/components/global/icons";
-import { SidebarConfig } from "@/components/global/app-sidebar";
+import Icons from '@/components/global/icons'
+import { SidebarConfig } from '@/components/global/app-sidebar'
 
 const sidebarConfig: SidebarConfig = {
   brand: {
-    title: "Tabby",
+    title: 'Tabby',
     icon: Icons.bot,
-    href: "/"
+    href: '/',
   },
   sections: [
     {
-      label: "Overview",
+      label: 'Overview',
       items: [
         {
-          title: "Dashboard",
-          href: "/dashboard",
-          icon: Icons.layoutDashboard
+          title: 'Dashboard',
+          href: '/dashboard',
+          icon: Icons.layoutDashboard,
         },
         {
-          title: "Analytics",
-          href: "/analytics",
-          icon: Icons.barChart3
+          title: 'Analytics',
+          href: '/analytics',
+          icon: Icons.barChart3,
         },
-      ]
+      ],
     },
     {
-      label: "Configuration",
+      label: 'Configuration',
       items: [
         {
-          title: "Preferences",
-          href: "/preferences",
-          icon: Icons.slidersHorizontal
+          title: 'Preferences',
+          href: '/preferences',
+          icon: Icons.slidersHorizontal,
         },
         {
-          title: "Settings",
-          href: "/settings",
-          icon: Icons.settings
+          title: 'Settings',
+          href: '/settings',
+          icon: Icons.settings,
         },
-      ]
+      ],
     },
-  ]
+  ],
 }
 
 export default sidebarConfig

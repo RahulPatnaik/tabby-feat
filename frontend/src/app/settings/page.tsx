@@ -1,7 +1,7 @@
-"use client";
+'use client'
 
-import { SettingsLayout } from "@/components/settings/layout";
+import { SettingsLayout } from '@/components/settings/layout'
 
 export default function SettingsPage() {
-  return <SettingsLayout />;
+  return <SettingsLayout />
 }

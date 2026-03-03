@@ -1,20 +1,20 @@
-"use client";
+'use client'
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { History, Trash2 } from "lucide-react";
-import { Conversation } from "@/lib/ai/types";
+} from '@/components/ui/dropdown-menu'
+import { History, Trash2 } from 'lucide-react'
+import { Conversation } from '@/lib/ai/types'
 
 interface InterviewHistoryProps {
-  sessions: Conversation[];
-  onSelect: (conversationId: string) => void;
-  onDelete: (e: React.MouseEvent, conversationId: string) => void;
-  disabled?: boolean;
+  sessions: Conversation[]
+  onSelect: (conversationId: string) => void
+  onDelete: (e: React.MouseEvent, conversationId: string) => void
+  disabled?: boolean
 }
 
 export function InterviewHistory({
@@ -53,5 +53,5 @@ export function InterviewHistory({
         )}
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+  )
 }

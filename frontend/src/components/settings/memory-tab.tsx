@@ -1,26 +1,26 @@
-"use client";
+'use client'
 
-import { useState, useMemo } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { 
-  Brain, 
-  Trash2, 
-  RefreshCw, 
-  Search, 
-  AlertCircle, 
+import { useState, useMemo } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import {
+  Brain,
+  Trash2,
+  RefreshCw,
+  Search,
+  AlertCircle,
   Plus,
   Database,
   Clock,
   History,
   BookOpen,
   ListChecks,
-  HelpCircle, 
-  Layers
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import useUser from "@/hooks/use-user";
+  HelpCircle,
+  Layers,
+} from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import useUser from '@/hooks/use-user'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,144 +31,153 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from '@/components/ui/alert-dialog'
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Badge } from "@/components/ui/badge";
+} from '@/components/ui/accordion'
+import { Badge } from '@/components/ui/badge'
 
 interface Memory {
-  id: string;
-  memory: string;
-  hash: string;
-  metadata: Record<string, unknown> | null;
-  created_at: string;
-  updated_at: string | null;
-  user_id: string;
+  id: string
+  memory: string
+  hash: string
+  metadata: Record<string, unknown> | null
+  created_at: string
+  updated_at: string | null
+  user_id: string
 }
 
 interface GetAllMemoriesResponse {
-  success: boolean;
+  success: boolean
   memories: {
-    results: Memory[];
-  };
+    results: Memory[]
+  }
 }
 
 interface SearchMemoriesResponse {
-  success: boolean;
+  success: boolean
   results: {
-    results: Memory[];
-  };
+    results: Memory[]
+  }
 }
 
-const MEMORY_API_URL = process.env.NEXT_PUBLIC_MEMORY_API_URL || "http://localhost:8000";
+const MEMORY_API_URL = process.env.NEXT_PUBLIC_MEMORY_API_URL || 'http://localhost:8000'
 
 async function fetchAllMemories(userId: string): Promise<Memory[]> {
   const response = await fetch(`${MEMORY_API_URL}/memory/get_all`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ user_id: userId }),
-  });
-  const data: GetAllMemoriesResponse = await response.json();
-  if (!data.success) throw new Error("Failed to fetch memories");
-  return data.memories?.results || [];
+  })
+  const data: GetAllMemoriesResponse = await response.json()
+  if (!data.success) throw new Error('Failed to fetch memories')
+  return data.memories?.results || []
 }
 
-async function searchMemories({ query, userId }: { query: string; userId: string }): Promise<Memory[]> {
+async function searchMemories({
+  query,
+  userId,
+}: {
+  query: string
+  userId: string
+}): Promise<Memory[]> {
   const response = await fetch(`${MEMORY_API_URL}/memory/search`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ query, user_id: userId, limit: 20 }),
-  });
-  const data: SearchMemoriesResponse = await response.json();
-  if (!data.success) throw new Error("Failed to search memories");
-  return data.results?.results || [];
+  })
+  const data: SearchMemoriesResponse = await response.json()
+  if (!data.success) throw new Error('Failed to search memories')
+  return data.results?.results || []
 }
 
 async function deleteMemory(memoryId: string): Promise<void> {
   const response = await fetch(`${MEMORY_API_URL}/memory/${memoryId}`, {
-    method: "DELETE",
-  });
-  const data = await response.json();
-  if (!data.success) throw new Error("Failed to delete memory");
+    method: 'DELETE',
+  })
+  const data = await response.json()
+  if (!data.success) throw new Error('Failed to delete memory')
 }
 
 async function deleteAllMemories(userId: string): Promise<void> {
   const response = await fetch(`${MEMORY_API_URL}/memory/user/${userId}`, {
-    method: "DELETE",
-  });
-  const data = await response.json();
-  if (!data.success) throw new Error("Failed to delete all memories");
+    method: 'DELETE',
+  })
+  const data = await response.json()
+  if (!data.success) throw new Error('Failed to delete all memories')
 }
 
 async function addMemory({ content, userId }: { content: string; userId: string }): Promise<void> {
   const response = await fetch(`${MEMORY_API_URL}/memory/add`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      messages: [{ role: "user", content }],
+      messages: [{ role: 'user', content }],
       user_id: userId,
     }),
-  });
-  const data = await response.json();
-  if (!data.success) throw new Error("Failed to add memory");
+  })
+  const data = await response.json()
+  if (!data.success) throw new Error('Failed to add memory')
 }
 
-const MEMORY_TYPES_CONFIG: Record<string, { label: string; icon: any; color: string; bg: string; border: string }> = {
-  LONG_TERM: { 
-    label: "Core Facts", 
-    icon: Database, 
-    color: "text-blue-500", 
-    bg: "bg-blue-500/10", 
-    border: "border-blue-500/20" 
+const MEMORY_TYPES_CONFIG: Record<
+  string,
+  { label: string; icon: any; color: string; bg: string; border: string }
+> = {
+  LONG_TERM: {
+    label: 'Core Facts',
+    icon: Database,
+    color: 'text-blue-500',
+    bg: 'bg-blue-500/10',
+    border: 'border-blue-500/20',
   },
-  SHORT_TERM: { 
-    label: "Current Context", 
-    icon: Clock, 
-    color: "text-amber-500", 
-    bg: "bg-amber-500/10", 
-    border: "border-amber-500/20" 
+  SHORT_TERM: {
+    label: 'Current Context',
+    icon: Clock,
+    color: 'text-amber-500',
+    bg: 'bg-amber-500/10',
+    border: 'border-amber-500/20',
   },
-  EPISODIC: { 
-    label: "Past Events", 
-    icon: History, 
-    color: "text-purple-500", 
-    bg: "bg-purple-500/10", 
-    border: "border-purple-500/20" 
+  EPISODIC: {
+    label: 'Past Events',
+    icon: History,
+    color: 'text-purple-500',
+    bg: 'bg-purple-500/10',
+    border: 'border-purple-500/20',
   },
-  SEMANTIC: { 
-    label: "Knowledge Base", 
-    icon: BookOpen, 
-    color: "text-emerald-500", 
-    bg: "bg-emerald-500/10", 
-    border: "border-emerald-500/20" 
+  SEMANTIC: {
+    label: 'Knowledge Base',
+    icon: BookOpen,
+    color: 'text-emerald-500',
+    bg: 'bg-emerald-500/10',
+    border: 'border-emerald-500/20',
   },
-  PROCEDURAL: { 
-    label: "Workflow Rules", 
-    icon: ListChecks, 
-    color: "text-orange-500", 
-    bg: "bg-orange-500/10", 
-    border: "border-orange-500/20" 
+  PROCEDURAL: {
+    label: 'Workflow Rules',
+    icon: ListChecks,
+    color: 'text-orange-500',
+    bg: 'bg-orange-500/10',
+    border: 'border-orange-500/20',
   },
-  UNCATEGORIZED: { 
-    label: "Uncategorized", 
-    icon: HelpCircle, 
-    color: "text-zinc-500", 
-    bg: "bg-zinc-500/10", 
-    border: "border-zinc-500/20" 
-  }
-};
+  UNCATEGORIZED: {
+    label: 'Uncategorized',
+    icon: HelpCircle,
+    color: 'text-zinc-500',
+    bg: 'bg-zinc-500/10',
+    border: 'border-zinc-500/20',
+  },
+}
 
 export function MemoryTab() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isSearching, setIsSearching] = useState(false);
-  const [newMemory, setNewMemory] = useState("");
-  const queryClient = useQueryClient();
-  const { data: user } = useUser();
-  const userId = user?.id;
+  const [searchQuery, setSearchQuery] = useState('')
+  const [isSearching, setIsSearching] = useState(false)
+  const [newMemory, setNewMemory] = useState('')
+  const queryClient = useQueryClient()
+  const { data: user } = useUser()
+  const userId = user?.id
 
   const {
     data: memories = [],
@@ -176,73 +185,73 @@ export function MemoryTab() {
     error,
     refetch,
   } = useQuery({
-    queryKey: ["memories", userId],
+    queryKey: ['memories', userId],
     queryFn: () => fetchAllMemories(userId!),
     enabled: !!userId,
-  });
+  })
 
   const searchMutation = useMutation({
     mutationFn: searchMemories,
     onSuccess: (results) => {
-      queryClient.setQueryData(["memories", userId], results);
-      setIsSearching(true);
+      queryClient.setQueryData(['memories', userId], results)
+      setIsSearching(true)
     },
-  });
+  })
 
   const deleteMutation = useMutation({
     mutationFn: deleteMemory,
     onSuccess: (_, memoryId) => {
-      queryClient.setQueryData(["memories", userId], (old: Memory[] = []) =>
+      queryClient.setQueryData(['memories', userId], (old: Memory[] = []) =>
         old.filter((m) => m.id !== memoryId)
-      );
+      )
     },
-  });
+  })
 
   const deleteAllMutation = useMutation({
     mutationFn: () => deleteAllMemories(userId!),
     onSuccess: () => {
-      queryClient.setQueryData(["memories", userId], []);
+      queryClient.setQueryData(['memories', userId], [])
     },
-  });
+  })
 
   const addMutation = useMutation({
     mutationFn: addMemory,
     onSuccess: () => {
-      setNewMemory("");
-      refetch();
+      setNewMemory('')
+      refetch()
     },
-  });
+  })
 
   const handleAddMemory = () => {
-    if (!newMemory.trim() || !userId) return;
-    addMutation.mutate({ content: newMemory.trim(), userId });
-  };
+    if (!newMemory.trim() || !userId) return
+    addMutation.mutate({ content: newMemory.trim(), userId })
+  }
 
   const handleSearch = () => {
-    if (!userId) return;
+    if (!userId) return
     if (!searchQuery.trim()) {
-      setIsSearching(false);
-      refetch();
-      return;
+      setIsSearching(false)
+      refetch()
+      return
     }
-    searchMutation.mutate({ query: searchQuery, userId });
-  };
+    searchMutation.mutate({ query: searchQuery, userId })
+  }
 
   const handleClearSearch = () => {
-    setSearchQuery("");
-    setIsSearching(false);
-    refetch();
-  };
+    setSearchQuery('')
+    setIsSearching(false)
+    refetch()
+  }
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
+    return new Date(dateString).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+  }
 
   const groupedMemories = useMemo(() => {
     const groups: Record<string, Memory[]> = {
@@ -251,22 +260,22 @@ export function MemoryTab() {
       EPISODIC: [],
       SEMANTIC: [],
       PROCEDURAL: [],
-      UNCATEGORIZED: []
-    };
+      UNCATEGORIZED: [],
+    }
 
     memories.forEach((memory) => {
-      const type = (memory.metadata?.memory_type as string) || "UNCATEGORIZED";
+      const type = (memory.metadata?.memory_type as string) || 'UNCATEGORIZED'
       if (groups[type]) {
-        groups[type].push(memory);
+        groups[type].push(memory)
       } else {
-        groups["UNCATEGORIZED"].push(memory);
+        groups['UNCATEGORIZED'].push(memory)
       }
-    });
+    })
 
-    return groups;
-  }, [memories]);
+    return groups
+  }, [memories])
 
-  const loading = isLoading || searchMutation.isPending;
+  const loading = isLoading || searchMutation.isPending
 
   return (
     <div className="p-6 h-full flex flex-col gap-4">
@@ -278,8 +287,8 @@ export function MemoryTab() {
           <div>
             <h2 className="font-semibold text-base">Memory Store</h2>
             <p className="text-xs text-muted-foreground">
-              {memories.length} memories stored for {userId || "..."}
-              {isSearching && " (filtered)"}
+              {memories.length} memories stored for {userId || '...'}
+              {isSearching && ' (filtered)'}
             </p>
           </div>
         </div>
@@ -288,12 +297,12 @@ export function MemoryTab() {
             variant="ghost"
             size="sm"
             onClick={() => {
-              handleClearSearch();
+              handleClearSearch()
             }}
             disabled={loading}
             className="gap-1.5"
           >
-            <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
           <AlertDialog>
@@ -312,7 +321,8 @@ export function MemoryTab() {
               <AlertDialogHeader>
                 <AlertDialogTitle>Delete all memories?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This will permanently delete all {memories.length} memories. This action cannot be undone.
+                  This will permanently delete all {memories.length} memories. This action cannot be
+                  undone.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
@@ -336,7 +346,7 @@ export function MemoryTab() {
             placeholder="Search memories..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
             className="pl-9 bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800"
           />
         </div>
@@ -355,11 +365,11 @@ export function MemoryTab() {
           placeholder="Add a new memory... (e.g., 'My favorite color is blue')"
           value={newMemory}
           onChange={(e) => setNewMemory(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleAddMemory()}
+          onKeyDown={(e) => e.key === 'Enter' && handleAddMemory()}
           className="bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800"
         />
-        <Button 
-          onClick={handleAddMemory} 
+        <Button
+          onClick={handleAddMemory}
           disabled={!newMemory.trim() || addMutation.isPending || !userId}
           className="gap-1.5"
         >
@@ -389,23 +399,34 @@ export function MemoryTab() {
           <div className="flex flex-col items-center justify-center h-40 text-muted-foreground gap-2">
             <Brain className="w-10 h-10 opacity-30" />
             <p className="text-sm">
-              {isSearching ? "No memories match your search" : "No memories stored yet"}
+              {isSearching ? 'No memories match your search' : 'No memories stored yet'}
             </p>
             <p className="text-xs">
               {isSearching
-                ? "Try a different search term"
-                : "Memories will appear here as you interact with the AI"}
+                ? 'Try a different search term'
+                : 'Memories will appear here as you interact with the AI'}
             </p>
           </div>
         ) : (
-          <Accordion type="multiple" defaultValue={["LONG_TERM", "SHORT_TERM", "UNCATEGORIZED", "EPISODIC", "SEMANTIC", "PROCEDURAL"]} className="space-y-4">
+          <Accordion
+            type="multiple"
+            defaultValue={[
+              'LONG_TERM',
+              'SHORT_TERM',
+              'UNCATEGORIZED',
+              'EPISODIC',
+              'SEMANTIC',
+              'PROCEDURAL',
+            ]}
+            className="space-y-4"
+          >
             {Object.keys(MEMORY_TYPES_CONFIG).map((type) => {
-              const config = MEMORY_TYPES_CONFIG[type];
-              const groupMemories = groupedMemories[type] || [];
-              
-              if (groupMemories.length === 0) return null;
+              const config = MEMORY_TYPES_CONFIG[type]
+              const groupMemories = groupedMemories[type] || []
 
-              const Icon = config.icon;
+              if (groupMemories.length === 0) return null
+
+              const Icon = config.icon
 
               return (
                 <AccordionItem key={type} value={type} className="border-none">
@@ -415,7 +436,10 @@ export function MemoryTab() {
                         <Icon className={`w-4 h-4 ${config.color}`} />
                       </div>
                       <span className="font-medium text-sm">{config.label}</span>
-                      <Badge variant="secondary" className="ml-2 text-xs h-5 px-1.5 min-w-5 flex justify-center">
+                      <Badge
+                        variant="secondary"
+                        className="ml-2 text-xs h-5 px-1.5 min-w-5 flex justify-center"
+                      >
                         {groupMemories.length}
                       </Badge>
                     </div>
@@ -441,12 +465,13 @@ export function MemoryTab() {
                               size="icon"
                               className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 absolute top-2 right-2"
                               onClick={(e) => {
-                                e.stopPropagation();
-                                deleteMutation.mutate(memory.id);
+                                e.stopPropagation()
+                                deleteMutation.mutate(memory.id)
                               }}
                               disabled={deleteMutation.isPending}
                             >
-                              {deleteMutation.isPending && deleteMutation.variables === memory.id ? (
+                              {deleteMutation.isPending &&
+                              deleteMutation.variables === memory.id ? (
                                 <RefreshCw className="w-4 h-4 animate-spin" />
                               ) : (
                                 <Trash2 className="w-4 h-4" />
@@ -458,11 +483,11 @@ export function MemoryTab() {
                     </div>
                   </AccordionContent>
                 </AccordionItem>
-              );
+              )
             })}
           </Accordion>
         )}
       </ScrollArea>
     </div>
-  );
+  )
 }

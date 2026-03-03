@@ -1,14 +1,10 @@
-"use client";
+'use client'
 
-import { AppSidebar } from "@/components/global/app-sidebar";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
+import { AppSidebar } from '@/components/global/app-sidebar'
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
+import { Breadcrumbs } from '@/components/navigation/breadcrumbs'
 
-export default function PreferencesLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function PreferencesLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -17,5 +13,5 @@ export default function PreferencesLayout({
         <main className="flex-1 overflow-auto">{children}</main>
       </SidebarInset>
     </SidebarProvider>
-  );
+  )
 }
