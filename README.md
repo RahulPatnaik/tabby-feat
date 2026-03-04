@@ -21,7 +21,7 @@
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 [![Supabase](https://img.shields.io/badge/Supabase-Local_Docker-3FCF8E?logo=supabase&logoColor=white)](https://supabase.com/)
 
-[Features](#features) · [Screenshots](#screenshots) · [Tech Stack](#tech-stack) · [Getting Started](#getting-started) · [Contributing](#contributing) · [License](#license)
+[Features](#features) · [Screenshots](#screenshots) · [Tech Stack](#tech-stack) · [Getting Started](#getting-started) · [Architecture](docs/architecture.md) · [Contributing](#contributing) · [License](#license)
 
 </div>
 
@@ -198,28 +198,6 @@ npx supabase start    # starts all services (~10 s after first run)
 After startup, note the **API URL**, **anon key**, and **service_role key** printed in the terminal.
 
 <details>
-<summary><b>Create storage buckets (one-time)</b></summary>
-
-```powershell
-# PowerShell
-$headers = @{
-  "apikey"        = "<SERVICE_ROLE_KEY>"
-  "Authorization" = "Bearer <SERVICE_ROLE_KEY>"
-  "Content-Type"  = "application/json"
-}
-Invoke-RestMethod -Uri "http://127.0.0.1:54321/storage/v1/bucket" `
-  -Method Post -Headers $headers `
-  -Body '{"id":"context-captures","name":"context-captures","public":true}'
-Invoke-RestMethod -Uri "http://127.0.0.1:54321/storage/v1/bucket" `
-  -Method Post -Headers $headers `
-  -Body '{"id":"project-assets","name":"project-assets","public":true}'
-```
-
-Or create them manually via **Supabase Studio** → `http://localhost:54323` → Storage.
-
-</details>
-
-<details>
 <summary><b>Supabase Quick Reference</b></summary>
 
 | Action | Command |
@@ -254,7 +232,7 @@ cp backend/env.example backend/.env
 ```
 
 <details>
-<summary><b>Frontend</b> — <code>frontend/.env.local</code></summary>
+<summary><b>Frontend</b> - <code>frontend/.env.local</code></summary>
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL="http://127.0.0.1:54321"
@@ -271,7 +249,7 @@ NEXT_PUBLIC_MEMORY_API_URL="http://localhost:8000"
 </details>
 
 <details>
-<summary><b>Next.js Backend</b> — <code>nextjs-backend/.env.local</code></summary>
+<summary><b>Next.js Backend</b> - <code>nextjs-backend/.env.local</code></summary>
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL="http://127.0.0.1:54321"
@@ -299,7 +277,7 @@ MEMORY_API_URL="http://localhost:8000"
 </details>
 
 <details>
-<summary><b>Backend</b> — <code>backend/.env</code></summary>
+<summary><b>Backend</b> - <code>backend/.env</code></summary>
 
 ```env
 OPENAI_API_KEY=

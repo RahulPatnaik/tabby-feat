@@ -193,28 +193,6 @@ We use a **local Supabase instance** running in Docker.
 5. The database schema is auto-applied from `supabase/migrations/`.
 
 <details>
-<summary><b>Create storage buckets (one-time setup)</b></summary>
-
-```powershell
-# PowerShell
-$headers = @{
-  "apikey"        = "<SERVICE_ROLE_KEY from step 4>"
-  "Authorization" = "Bearer <SERVICE_ROLE_KEY from step 4>"
-  "Content-Type"  = "application/json"
-}
-Invoke-RestMethod -Uri "http://127.0.0.1:54321/storage/v1/bucket" `
-  -Method Post -Headers $headers `
-  -Body '{"id":"context-captures","name":"context-captures","public":true}'
-Invoke-RestMethod -Uri "http://127.0.0.1:54321/storage/v1/bucket" `
-  -Method Post -Headers $headers `
-  -Body '{"id":"project-assets","name":"project-assets","public":true}'
-```
-
-Or create them manually via **Supabase Studio** at `http://localhost:54323` → Storage.
-
-</details>
-
-<details>
 <summary><b>Supabase Quick Reference</b></summary>
 
 | Action | Command |
