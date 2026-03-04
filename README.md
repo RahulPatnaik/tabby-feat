@@ -294,9 +294,19 @@ NEO4J_PASSWORD=
 ### 4. Run
 
 ```bash
-# Terminal 0 — Local Supabase (Docker Desktop must be running)
+# Start Supabase first (Docker Desktop must be running)
 npx supabase start
 
+# Start all services in dev mode (backend + frontend + nextjs-backend)
+pnpm dev
+```
+
+All three services start in parallel with color-coded logs.
+
+<details>
+<summary><b>Run services individually</b></summary>
+
+```bash
 # Terminal 1 — Memory backend
 cd backend && uv run main.py
 
@@ -309,6 +319,22 @@ cd frontend && pnpm run windows-mcp
 # Terminal 4 — Electron app
 cd frontend && pnpm dev
 ```
+
+</details>
+
+<details>
+<summary><b>Production mode</b></summary>
+
+```bash
+# Build and start everything
+pnpm prod
+
+# Or step-by-step:
+pnpm build    # builds frontend + nextjs-backend
+pnpm start    # starts all services in production mode
+```
+
+</details>
 
 Once running:
 
