@@ -21,7 +21,7 @@
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 [![Supabase](https://img.shields.io/badge/Supabase-Local_Docker-3FCF8E?logo=supabase&logoColor=white)](https://supabase.com/)
 
-[Features](#features) · [Screenshots](#screenshots) · [Tech Stack](#tech-stack) · [Getting Started](#getting-started) · [Architecture](docs/architecture.md) · [Contributing](#contributing) · [License](#license)
+[Features](#features) · [Screenshots](#screenshots) · [Tech Stack](#tech-stack) · [Getting Started](#getting-started) · [Architecture](docs/architecture.md) · [Docs](https://tabby-org.vercel.app/docs) · [Contributing](#contributing) · [License](#license)
 
 </div>
 
@@ -435,6 +435,8 @@ tabby/
 ## Contributing
 
 Contributions are what make the open-source community amazing. **Any contributions you make are greatly appreciated.**
+
+**Check out our [Documentation](https://tabby-org.vercel.app/docs)** for detailed guides on architecture, features, and APIs.
 
 Please read our [Contributing Guide](CONTRIBUTING.md) to get started. In short:
 

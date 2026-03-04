@@ -2,6 +2,8 @@
 
 First off, thank you for considering contributing to Tabby! It's people like you that make Tabby such a great tool.
 
+> **Before you dive in**, check out our **[Documentation](https://tabby-org.vercel.app/docs)** for detailed guides on architecture, features, and APIs. It's the best place to understand how Tabby works under the hood.
+
 This document covers the contribution workflow, coding guidelines, and local development setup.
 
 ---
