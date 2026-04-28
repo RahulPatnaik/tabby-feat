@@ -1,4 +1,4 @@
-name: Deploy NextJS Backend to vercel on push
+name: Deploy NextJS Backend
 on:
   push:
     branches: [main]

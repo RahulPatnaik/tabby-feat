@@ -2,19 +2,25 @@
   "name": "tabby-root",
   "private": true,
   "scripts": {
-    "prepare": "husky"
+    "prepare": "husky",
+    "dev:backend": "cd backend && uv run main.py",
+    "dev:frontend": "pnpm --dir frontend run dev",
+    "dev:nextjs-backend": "pnpm --dir nextjs-backend run dev",
+    "dev": "concurrently -n backend,frontend,nextjs-backend -c blue,green,magenta \"pnpm run dev:backend\" \"pnpm run dev:frontend\" \"pnpm run dev:nextjs-backend\"",
+    "build:frontend": "pnpm --dir frontend run build",
+    "build:nextjs-backend": "pnpm --dir nextjs-backend run build",
+    "build": "pnpm run build:frontend && pnpm run build:nextjs-backend",
+    "start:backend": "cd backend && uv run main.py",
+    "start:frontend": "pnpm --dir frontend run next:start",
+    "start:nextjs-backend": "pnpm --dir nextjs-backend run start",
+    "start": "concurrently -n backend,frontend,nextjs-backend -c blue,green,magenta \"pnpm run start:backend\" \"pnpm run start:frontend\" \"pnpm run start:nextjs-backend\"",
+    "prod": "pnpm run build && pnpm run start",
+    "typecheck": "pnpm --dir frontend run typecheck && pnpm --dir nextjs-backend run typecheck",
+    "build:staged": "pnpm run typecheck && pnpm run build"
   },
   "devDependencies": {
+    "concurrently": "^9.2.1",
     "husky": "^9.1.7",
     "lint-staged": "^15.4.3"
-  },
-  "lint-staged": {
-    "frontend/**/*.{js,jsx,ts,tsx}": [
-      "pnpm --dir frontend run next:lint",
-      "pnpm --dir frontend run format"
-    ],
-    "nextjs-backend/**/*.{js,jsx,ts,tsx}": [
-      "pnpm --dir nextjs-backend run format"
-    ]
   }
 }
