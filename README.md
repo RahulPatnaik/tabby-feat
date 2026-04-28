@@ -368,3 +368,28 @@ ai-keyboard/
 | `Ctrl+Arrow`   | Any window | Move floating window        |
 | `Esc`          | Any panel  | Back/close                  |
 | `Enter`        | Result     | Accept & paste              |
+
+## Running on Linux
+
+The Linux build uses `xdotool` for window activation and synthetic key input,
+and reads the X11 PRIMARY selection directly for capture (so highlighting
+text in any X11 app is enough — no need to also Ctrl+C). It is tested on
+GNOME / X11; Wayland sessions will need to fall back to XWayland.
+
+Prerequisites:
+
+```bash
+sudo apt install xdotool
+```
+
+Then run as on the other platforms:
+
+```bash
+cd frontend
+pnpm install
+pnpm dev
+```
+
+Press `Ctrl+\` with text selected in any window to open the action menu,
+pick "Make Longer" (or any other action), and press `Enter` to replace
+the selection with the AI output.
