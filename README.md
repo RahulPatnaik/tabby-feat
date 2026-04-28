@@ -347,7 +347,31 @@ Once running:
 | Memory API | `http://localhost:8000` |
 | Windows MCP | `http://localhost:8001` |
 
-### 5. System Tray
+### 5. Linux Port
+
+The Linux build uses `xdotool` for window activation and synthetic key
+input, and reads the X11 PRIMARY selection directly for capture (so
+highlighting text in any X11 app is enough — no need to also Ctrl+C).
+It is tested on GNOME / X11; Wayland sessions will need to fall back
+to XWayland.
+
+#### Prerequisites
+
+```bash
+sudo apt install xdotool
+```
+
+#### Then run as on the other platforms
+
+```bash
+cd frontend
+pnpm install
+pnpm dev
+```
+
+After that, run the application.
+
+### 6. System Tray
 
 Tabby runs in the system tray. Right-click the icon for:
 
